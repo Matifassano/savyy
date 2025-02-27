@@ -3,11 +3,30 @@ import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
-import { BadgeCheck, CreditCard, Bell } from "lucide-react";
+import { BadgeCheck, CreditCard, Bell, Moon, Sun } from "lucide-react";
 import { Footer } from "./Login";
+import { useState, useEffect } from "react";
 
 const Index = () => {
   const { toast } = useToast();
+  const [theme, setTheme] = useState<"light" | "dark">("light");
+
+  // Load theme from localStorage on component mount
+  useEffect(() => {
+    const savedTheme = localStorage.getItem("theme") as "light" | "dark" | null;
+    if (savedTheme) {
+      setTheme(savedTheme);
+      document.documentElement.classList.toggle("dark", savedTheme === "dark");
+    }
+  }, []);
+
+  // Toggle theme function
+  const toggleTheme = () => {
+    const newTheme = theme === "light" ? "dark" : "light";
+    setTheme(newTheme);
+    localStorage.setItem("theme", newTheme);
+    document.documentElement.classList.toggle("dark", newTheme === "dark");
+  };
 
   const features = [
     {
@@ -32,7 +51,14 @@ const Index = () => {
       <header className="container mx-auto py-6">
         <nav className="flex justify-between items-center">
           <div className="text-2xl font-bold text-primary">PromoAlert</div>
-          <div className="space-x-4">
+          <div className="flex items-center gap-4">
+            <Button variant="ghost" size="icon" onClick={toggleTheme}>
+              {theme === "light" ? (
+                <Moon className="h-5 w-5" />
+              ) : (
+                <Sun className="h-5 w-5" />
+              )}
+            </Button>
             <Button variant="outline" asChild>
               <Link to="/login">Log in</Link>
             </Button>

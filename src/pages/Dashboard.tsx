@@ -2,10 +2,10 @@
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Bell, CreditCard, Gift, Plus, Tag, Filter } from "lucide-react";
+import { Bell, CreditCard, Gift, Plus, Tag, Filter, Moon, Sun } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Footer } from "./Login";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Carousel,
   CarouselContent,
@@ -19,6 +19,14 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 
 // Mock data for promotions (replace with real data later)
 const promotions = [
@@ -64,11 +72,61 @@ const promotions = [
   },
 ];
 
+// Mock data for notifications
+const notifications = [
+  {
+    id: 1,
+    title: "New Chase Promotion",
+    description: "Chase has added a new cashback offer for electronics",
+    time: "10 minutes ago",
+    read: false
+  },
+  {
+    id: 2,
+    title: "Promotion Expiring Soon",
+    description: "American Express dining points promotion expires in 2 days",
+    time: "2 hours ago",
+    read: true
+  },
+  {
+    id: 3,
+    title: "Card Added Successfully",
+    description: "Your Capital One Venture card has been added to your account",
+    time: "Yesterday",
+    read: true
+  },
+  {
+    id: 4,
+    title: "Limited Time Offer",
+    description: "Citibank is offering 5% cashback on all purchases this weekend",
+    time: "2 days ago",
+    read: true
+  }
+];
+
 // Get unique categories from promotions
 const categories = ["All", ...new Set(promotions.map(promo => promo.category))];
 
 const Dashboard = () => {
   const [filter, setFilter] = useState("All");
+  const [theme, setTheme] = useState<"light" | "dark">("light");
+  
+  // Load theme from localStorage on component mount
+  useEffect(() => {
+    const savedTheme = localStorage.getItem("theme") as "light" | "dark" | null;
+    if (savedTheme) {
+      setTheme(savedTheme);
+      document.documentElement.classList.toggle("dark", savedTheme === "dark");
+    }
+  }, []);
+
+  // Toggle theme function
+  const toggleTheme = () => {
+    const newTheme = theme === "light" ? "dark" : "light";
+    setTheme(newTheme);
+    localStorage.setItem("theme", newTheme);
+    document.documentElement.classList.toggle("dark", newTheme === "dark");
+  };
   
   // Filter promotions based on selected category
   const filteredPromotions = filter === "All" 
@@ -96,9 +154,55 @@ const Dashboard = () => {
                 </Link>
               </div>
             </div>
-            <Button variant="ghost" size="icon">
-              <Bell className="h-5 w-5" />
-            </Button>
+            <div className="flex items-center gap-3">
+              <Button variant="ghost" size="icon" onClick={toggleTheme}>
+                {theme === "light" ? (
+                  <Moon className="h-5 w-5" />
+                ) : (
+                  <Sun className="h-5 w-5" />
+                )}
+              </Button>
+              <Sheet>
+                <SheetTrigger asChild>
+                  <Button variant="ghost" size="icon">
+                    <Bell className="h-5 w-5" />
+                  </Button>
+                </SheetTrigger>
+                <SheetContent>
+                  <SheetHeader>
+                    <SheetTitle>Notifications</SheetTitle>
+                    <SheetDescription>
+                      Your recent notifications and alerts.
+                    </SheetDescription>
+                  </SheetHeader>
+                  <div className="mt-6 space-y-4">
+                    {notifications.map((notification) => (
+                      <div
+                        key={notification.id}
+                        className={`p-4 rounded-lg border ${
+                          !notification.read ? "bg-primary/5 border-primary/20" : ""
+                        }`}
+                      >
+                        <div className="flex justify-between items-start">
+                          <h4 className={`text-sm font-medium ${!notification.read ? "text-primary" : ""}`}>
+                            {notification.title}
+                          </h4>
+                          {!notification.read && (
+                            <div className="h-2 w-2 rounded-full bg-primary"></div>
+                          )}
+                        </div>
+                        <p className="text-sm text-muted-foreground mt-1">
+                          {notification.description}
+                        </p>
+                        <p className="text-xs text-muted-foreground mt-2">
+                          {notification.time}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                </SheetContent>
+              </Sheet>
+            </div>
           </nav>
         </div>
       </header>
