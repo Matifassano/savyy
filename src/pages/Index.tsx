@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { BadgeCheck, CreditCard, Bell } from "lucide-react";
+import { Footer } from "./Login";
 
 const Index = () => {
   const { toast } = useToast();
@@ -91,26 +92,7 @@ const Index = () => {
         </section>
       </main>
 
-      <footer className="border-t">
-        <div className="container mx-auto py-8 px-4">
-          <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-            <p className="text-sm text-muted-foreground">
-              © 2024 PromoAlert. All rights reserved.
-            </p>
-            <div className="flex gap-6">
-              <Link to="/terms" className="text-sm text-muted-foreground hover:text-foreground">
-                Terms of Service
-              </Link>
-              <Link to="/privacy" className="text-sm text-muted-foreground hover:text-foreground">
-                Privacy Policy
-              </Link>
-              <Link to="/support" className="text-sm text-muted-foreground hover:text-foreground">
-                Support
-              </Link>
-            </div>
-          </div>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 };

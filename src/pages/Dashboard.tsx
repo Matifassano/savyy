@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Bell, CreditCard, Gift, Plus, Tag } from "lucide-react";
 import { Link } from "react-router-dom";
+import { Footer } from "./Login";
 
 // Mock data for promotions (replace with real data later)
 const promotions = [
@@ -35,7 +36,7 @@ const promotions = [
 
 const Dashboard = () => {
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background flex flex-col">
       <header className="border-b">
         <div className="container mx-auto py-4">
           <nav className="flex justify-between items-center">
@@ -62,7 +63,7 @@ const Dashboard = () => {
         </div>
       </header>
 
-      <main className="container mx-auto py-8">
+      <main className="flex-1 container mx-auto py-8">
         <div className="flex justify-between items-center mb-8">
           <div>
             <h1 className="text-3xl font-bold">Welcome back!</h1>
@@ -112,6 +113,8 @@ const Dashboard = () => {
           ))}
         </div>
       </main>
+
+      <Footer />
     </div>
   );
 };
