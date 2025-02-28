@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { CreditCard, CheckCircle, AlertCircle } from "lucide-react";
+import { CreditCard, CheckCircle, AlertCircle, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 // Mock data for credit cards
