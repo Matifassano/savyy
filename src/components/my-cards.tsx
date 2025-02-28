@@ -4,9 +4,11 @@ import { motion } from "framer-motion";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { CreditCard, CheckCircle, AlertCircle, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
 
 // Mock data for credit cards
-const cards = [
+const initialCards = [
   {
     id: 1,
     bank: "Chase",
@@ -51,9 +53,69 @@ const cards = [
 
 export const MyCards = () => {
   const [expandedCard, setExpandedCard] = useState<number | null>(null);
+  const [cards, setCards] = useState(initialCards);
+  const [newCard, setNewCard] = useState({
+    bank: "",
+    name: "",
+    type: "",
+    number: "",
+    expiry: "",
+    status: "active"
+  });
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   const toggleCardExpand = (cardId: number) => {
     setExpandedCard(expandedCard === cardId ? null : cardId);
+  };
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setNewCard(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  const handleAddCard = () => {
+    // Generate a random color gradient for the new card
+    const colors = [
+      "bg-gradient-to-r from-blue-600 to-blue-800",
+      "bg-gradient-to-r from-green-600 to-green-800",
+      "bg-gradient-to-r from-purple-600 to-purple-800",
+      "bg-gradient-to-r from-red-600 to-red-800",
+      "bg-gradient-to-r from-amber-500 to-amber-700",
+      "bg-gradient-to-r from-cyan-600 to-cyan-800"
+    ];
+    const randomColor = colors[Math.floor(Math.random() * colors.length)];
+    
+    // Format card number with asterisks
+    let formattedNumber = newCard.number;
+    if (formattedNumber.length >= 4) {
+      formattedNumber = `**** **** **** ${formattedNumber.slice(-4)}`;
+    }
+
+    // Add the new card to the cards array
+    const newCardWithId = {
+      ...newCard,
+      id: cards.length + 1,
+      number: formattedNumber,
+      color: randomColor
+    };
+    
+    setCards([...cards, newCardWithId]);
+    
+    // Reset the new card form
+    setNewCard({
+      bank: "",
+      name: "",
+      type: "",
+      number: "",
+      expiry: "",
+      status: "active"
+    });
+    
+    // Close the dialog
+    setIsDialogOpen(false);
   };
 
   return (
@@ -132,24 +194,107 @@ export const MyCards = () => {
         </motion.div>
       ))}
       
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4, delay: 0.5 }}
-      >
-        <Card className="h-full flex flex-col justify-center items-center p-6 border-dashed">
-          <div className="text-center">
-            <CreditCard className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
-            <CardTitle className="text-lg mb-2">Add a New Card</CardTitle>
-            <CardDescription className="mb-4">
-              Link a new credit or debit card to get personalized offers
-            </CardDescription>
-            <Button>
-              <Plus className="mr-2 h-4 w-4" /> Add Card
-            </Button>
+      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+        <DialogTrigger asChild>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, delay: 0.5 }}
+          >
+            <Card className="h-full flex flex-col justify-center items-center p-6 border-dashed cursor-pointer hover:bg-accent/50 transition-colors">
+              <div className="text-center">
+                <CreditCard className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
+                <CardTitle className="text-lg mb-2">Add a New Card</CardTitle>
+                <CardDescription className="mb-4">
+                  Link a new credit or debit card to get personalized offers
+                </CardDescription>
+                <Button>
+                  <Plus className="mr-2 h-4 w-4" /> Add Card
+                </Button>
+              </div>
+            </Card>
+          </motion.div>
+        </DialogTrigger>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>Add a New Card</DialogTitle>
+            <DialogDescription>
+              Enter your card details below to add a new card to your account.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+            <div className="grid grid-cols-4 items-center gap-4">
+              <label htmlFor="bank" className="text-right text-sm font-medium">
+                Bank
+              </label>
+              <Input
+                id="bank"
+                name="bank"
+                value={newCard.bank}
+                onChange={handleInputChange}
+                className="col-span-3"
+                placeholder="Chase, American Express, etc."
+              />
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <label htmlFor="name" className="text-right text-sm font-medium">
+                Card Name
+              </label>
+              <Input
+                id="name"
+                name="name"
+                value={newCard.name}
+                onChange={handleInputChange}
+                className="col-span-3"
+                placeholder="Sapphire Preferred, Gold Card, etc."
+              />
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <label htmlFor="type" className="text-right text-sm font-medium">
+                Card Type
+              </label>
+              <Input
+                id="type"
+                name="type"
+                value={newCard.type}
+                onChange={handleInputChange}
+                className="col-span-3"
+                placeholder="Visa, Mastercard, Amex, etc."
+              />
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <label htmlFor="number" className="text-right text-sm font-medium">
+                Last 4 Digits
+              </label>
+              <Input
+                id="number"
+                name="number"
+                value={newCard.number}
+                onChange={handleInputChange}
+                className="col-span-3"
+                placeholder="1234"
+                maxLength={4}
+              />
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <label htmlFor="expiry" className="text-right text-sm font-medium">
+                Expiry Date
+              </label>
+              <Input
+                id="expiry"
+                name="expiry"
+                value={newCard.expiry}
+                onChange={handleInputChange}
+                className="col-span-3"
+                placeholder="MM/YY"
+              />
+            </div>
           </div>
-        </Card>
-      </motion.div>
+          <DialogFooter>
+            <Button type="button" onClick={handleAddCard}>Add Card</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

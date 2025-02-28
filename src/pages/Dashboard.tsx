@@ -1,3 +1,4 @@
+
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -116,12 +117,12 @@ const Dashboard = () => {
   return <div className="min-h-screen bg-background flex flex-col">
       <header className="border-b">
         <div className="container mx-auto py-3 px-4 sm:py-4 sm:px-6">
-          <nav className="flex justify-between items-center">
+          <nav className="flex items-center justify-between">
             <div className="flex items-center gap-4 sm:gap-8">
               <Link to="/" className="text-xl sm:text-2xl font-bold text-primary">
                 PromoAlert
               </Link>
-              <div className="hidden md:flex gap-6 justify-between">
+              <div className="hidden md:flex gap-6">
                 <Link to="/dashboard" className="text-sm font-medium">
                   Dashboard
                 </Link>
