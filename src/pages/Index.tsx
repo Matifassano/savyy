@@ -48,21 +48,21 @@ const Index = () => {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <header className="container mx-auto py-6">
+      <header className="container mx-auto py-4 px-4 sm:py-6 sm:px-6">
         <nav className="flex justify-between items-center">
-          <div className="text-2xl font-bold text-primary">PromoAlert</div>
-          <div className="flex items-center gap-4">
+          <div className="text-xl sm:text-2xl font-bold text-primary">PromoAlert</div>
+          <div className="flex items-center gap-2 sm:gap-4">
             <Button variant="ghost" size="icon" onClick={toggleTheme}>
               {theme === "light" ? (
-                <Moon className="h-5 w-5" />
+                <Moon className="h-4 w-4 sm:h-5 sm:w-5" />
               ) : (
-                <Sun className="h-5 w-5" />
+                <Sun className="h-4 w-4 sm:h-5 sm:w-5" />
               )}
             </Button>
-            <Button variant="outline" asChild>
+            <Button variant="outline" size="sm" className="text-xs sm:text-sm" asChild>
               <Link to="/login">Log in</Link>
             </Button>
-            <Button asChild>
+            <Button size="sm" className="text-xs sm:text-sm" asChild>
               <Link to="/signup">Sign up</Link>
             </Button>
           </div>
@@ -70,23 +70,23 @@ const Index = () => {
       </header>
 
       <main className="flex-1">
-        <section className="container mx-auto py-24 px-4">
+        <section className="container mx-auto py-12 sm:py-24 px-4">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
-            className="text-center max-w-3xl mx-auto space-y-6"
+            className="text-center max-w-3xl mx-auto space-y-4 sm:space-y-6"
           >
-            <h1 className="text-4xl sm:text-5xl font-bold tracking-tight">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight">
               Never Miss a Bank Promotion Again
             </h1>
-            <p className="text-xl text-muted-foreground">
+            <p className="text-base sm:text-lg md:text-xl text-muted-foreground">
               Get instant notifications about bank promotions when shopping online.
               Save money effortlessly.
             </p>
             <Button
               size="lg"
-              className="mt-8"
+              className="mt-6 sm:mt-8"
               onClick={() =>
                 toast({
                   title: "Coming Soon!",
@@ -98,7 +98,7 @@ const Index = () => {
             </Button>
           </motion.div>
 
-          <div className="grid md:grid-cols-3 gap-8 mt-24">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 sm:gap-8 mt-16 sm:mt-24">
             {features.map((feature, index) => (
               <motion.div
                 key={index}
@@ -111,7 +111,7 @@ const Index = () => {
                   {feature.icon}
                 </div>
                 <h3 className="text-xl font-semibold">{feature.title}</h3>
-                <p className="text-muted-foreground">{feature.description}</p>
+                <p className="text-sm sm:text-base text-muted-foreground">{feature.description}</p>
               </motion.div>
             ))}
           </div>

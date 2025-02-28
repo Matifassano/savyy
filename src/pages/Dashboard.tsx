@@ -136,10 +136,10 @@ const Dashboard = () => {
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <header className="border-b">
-        <div className="container mx-auto py-4">
+        <div className="container mx-auto py-3 px-4 sm:py-4 sm:px-6">
           <nav className="flex justify-between items-center">
-            <div className="flex items-center gap-8">
-              <Link to="/" className="text-2xl font-bold text-primary">
+            <div className="flex items-center gap-4 sm:gap-8">
+              <Link to="/" className="text-xl sm:text-2xl font-bold text-primary">
                 PromoAlert
               </Link>
               <div className="hidden md:flex gap-6">
@@ -154,18 +154,18 @@ const Dashboard = () => {
                 </Link>
               </div>
             </div>
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2 sm:gap-3">
               <Button variant="ghost" size="icon" onClick={toggleTheme}>
                 {theme === "light" ? (
-                  <Moon className="h-5 w-5" />
+                  <Moon className="h-4 w-4 sm:h-5 sm:w-5" />
                 ) : (
-                  <Sun className="h-5 w-5" />
+                  <Sun className="h-4 w-4 sm:h-5 sm:w-5" />
                 )}
               </Button>
               <Sheet>
                 <SheetTrigger asChild>
                   <Button variant="ghost" size="icon">
-                    <Bell className="h-5 w-5" />
+                    <Bell className="h-4 w-4 sm:h-5 sm:w-5" />
                   </Button>
                 </SheetTrigger>
                 <SheetContent>
@@ -207,19 +207,19 @@ const Dashboard = () => {
         </div>
       </header>
 
-      <main className="flex-1 container mx-auto py-8">
-        <div className="flex justify-between items-center mb-8">
+      <main className="flex-1 container mx-auto py-6 px-4 sm:py-8 sm:px-6">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 sm:gap-0 mb-6 sm:mb-8">
           <div>
-            <h1 className="text-3xl font-bold">Welcome back!</h1>
+            <h1 className="text-2xl sm:text-3xl font-bold">Welcome back!</h1>
             <p className="text-muted-foreground mt-1">
               Here are your current promotions
             </p>
           </div>
-          <div className="flex gap-2">
+          <div className="flex flex-wrap gap-2 w-full sm:w-auto">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="outline" size="sm" className="h-9">
-                  <Filter className="mr-2 h-4 w-4" />
+                <Button variant="outline" size="sm" className="h-8 sm:h-9 text-xs sm:text-sm w-full sm:w-auto">
+                  <Filter className="mr-2 h-3 w-3 sm:h-4 sm:w-4" />
                   {filter} Promotions
                 </Button>
               </DropdownMenuTrigger>
@@ -234,17 +234,17 @@ const Dashboard = () => {
                 ))}
               </DropdownMenuContent>
             </DropdownMenu>
-            <Button>
-              <Plus className="mr-2 h-4 w-4" /> Add New Card
+            <Button size="sm" className="h-8 sm:h-9 text-xs sm:text-sm w-full sm:w-auto">
+              <Plus className="mr-2 h-3 w-3 sm:h-4 sm:w-4" /> Add New Card
             </Button>
           </div>
         </div>
 
-        <div className="relative py-6">
+        <div className="relative py-4 sm:py-6">
           <Carousel className="w-full">
-            <CarouselContent className="px-4">
+            <CarouselContent className="-ml-2 sm:-ml-4">
               {filteredPromotions.map((promo) => (
-                <CarouselItem key={promo.id} className="md:basis-1/2 lg:basis-1/3 pl-4">
+                <CarouselItem key={promo.id} className="pl-2 sm:pl-4 basis-full sm:basis-1/2 md:basis-1/3 lg:basis-1/3">
                   <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -252,11 +252,11 @@ const Dashboard = () => {
                     className="h-full"
                   >
                     <Card className="h-full">
-                      <CardHeader>
+                      <CardHeader className="p-4 sm:p-6">
                         <div className="flex justify-between items-start">
                           <div className="space-y-1">
-                            <CardTitle>{promo.title}</CardTitle>
-                            <CardDescription>{promo.bank}</CardDescription>
+                            <CardTitle className="text-base sm:text-lg">{promo.title}</CardTitle>
+                            <CardDescription className="text-xs sm:text-sm">{promo.bank}</CardDescription>
                           </div>
                           {promo.category === "Cashback" ? (
                             <Tag className="h-4 w-4 text-green-500" />
@@ -267,8 +267,8 @@ const Dashboard = () => {
                           )}
                         </div>
                       </CardHeader>
-                      <CardContent>
-                        <p className="text-sm text-muted-foreground">
+                      <CardContent className="p-4 sm:p-6 pt-0 sm:pt-0">
+                        <p className="text-xs sm:text-sm text-muted-foreground">
                           {promo.description}
                         </p>
                         <div className="mt-4 text-xs text-muted-foreground">
@@ -280,8 +280,18 @@ const Dashboard = () => {
                 </CarouselItem>
               ))}
             </CarouselContent>
-            <CarouselPrevious className="left-0" />
-            <CarouselNext className="right-0" />
+            <div className="hidden sm:block">
+              <CarouselPrevious className="left-0" />
+              <CarouselNext className="right-0" />
+            </div>
+            <div className="flex justify-center mt-4 sm:hidden">
+              <Button variant="outline" size="sm" className="mx-1" onClick={() => document.querySelector('.carousel-prev')?.click()}>
+                Previous
+              </Button>
+              <Button variant="outline" size="sm" className="mx-1" onClick={() => document.querySelector('.carousel-next')?.click()}>
+                Next
+              </Button>
+            </div>
           </Carousel>
         </div>
       </main>
