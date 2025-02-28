@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Bell, CreditCard, Gift, Plus, Tag, Filter, Moon, Sun } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Footer } from "./Login";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import {
   Carousel,
   CarouselContent,
@@ -27,6 +27,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
+import { MyCards } from "@/components/my-cards";
 
 // Mock data for promotions (replace with real data later)
 const promotions = [
@@ -110,6 +111,9 @@ const categories = ["All", ...new Set(promotions.map(promo => promo.category))];
 const Dashboard = () => {
   const [filter, setFilter] = useState("All");
   const [theme, setTheme] = useState<"light" | "dark">("light");
+  const [showCards, setShowCards] = useState(false);
+  const prevBtnRef = useRef<HTMLButtonElement>(null);
+  const nextBtnRef = useRef<HTMLButtonElement>(null);
   
   // Load theme from localStorage on component mount
   useEffect(() => {
@@ -133,6 +137,18 @@ const Dashboard = () => {
     ? promotions 
     : promotions.filter(promo => promo.category === filter);
 
+  const handlePrevious = () => {
+    if (prevBtnRef.current) {
+      prevBtnRef.current.click();
+    }
+  };
+
+  const handleNext = () => {
+    if (nextBtnRef.current) {
+      nextBtnRef.current.click();
+    }
+  };
+
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <header className="border-b">
@@ -146,9 +162,13 @@ const Dashboard = () => {
                 <Link to="/dashboard" className="text-sm font-medium">
                   Dashboard
                 </Link>
-                <Link to="/cards" className="text-sm font-medium">
+                <Button 
+                  variant="ghost" 
+                  className="text-sm font-medium p-0" 
+                  onClick={() => setShowCards(!showCards)}
+                >
                   My Cards
-                </Link>
+                </Button>
                 <Link to="/notifications" className="text-sm font-medium">
                   Notifications
                 </Link>
@@ -208,92 +228,110 @@ const Dashboard = () => {
       </header>
 
       <main className="flex-1 container mx-auto py-6 px-4 sm:py-8 sm:px-6">
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 sm:gap-0 mb-6 sm:mb-8">
-          <div>
-            <h1 className="text-2xl sm:text-3xl font-bold">Welcome back!</h1>
-            <p className="text-muted-foreground mt-1">
-              Here are your current promotions
-            </p>
+        {showCards ? (
+          <div className="mb-6">
+            <div className="flex justify-between items-center mb-6">
+              <h2 className="text-2xl font-bold">My Cards</h2>
+              <Button size="sm" onClick={() => setShowCards(false)}>
+                Back to Promotions
+              </Button>
+            </div>
+            <MyCards />
           </div>
-          <div className="flex flex-wrap gap-2 w-full sm:w-auto">
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="outline" size="sm" className="h-8 sm:h-9 text-xs sm:text-sm w-full sm:w-auto">
-                  <Filter className="mr-2 h-3 w-3 sm:h-4 sm:w-4" />
-                  {filter} Promotions
+        ) : (
+          <>
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 sm:gap-0 mb-6 sm:mb-8">
+              <div>
+                <h1 className="text-2xl sm:text-3xl font-bold">Welcome back!</h1>
+                <p className="text-muted-foreground mt-1">
+                  Here are your current promotions
+                </p>
+              </div>
+              <div className="flex flex-wrap gap-2 w-full sm:w-auto">
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="outline" size="sm" className="h-8 sm:h-9 text-xs sm:text-sm w-full sm:w-auto">
+                      <Filter className="mr-2 h-3 w-3 sm:h-4 sm:w-4" />
+                      {filter} Promotions
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    {categories.map((category) => (
+                      <DropdownMenuItem 
+                        key={category}
+                        onClick={() => setFilter(category)}
+                      >
+                        {category}
+                      </DropdownMenuItem>
+                    ))}
+                  </DropdownMenuContent>
+                </DropdownMenu>
+                <Button 
+                  size="sm" 
+                  className="h-8 sm:h-9 text-xs sm:text-sm w-full sm:w-auto"
+                  onClick={() => setShowCards(true)}
+                >
+                  <CreditCard className="mr-2 h-3 w-3 sm:h-4 sm:w-4" /> My Cards
                 </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                {categories.map((category) => (
-                  <DropdownMenuItem 
-                    key={category}
-                    onClick={() => setFilter(category)}
-                  >
-                    {category}
-                  </DropdownMenuItem>
-                ))}
-              </DropdownMenuContent>
-            </DropdownMenu>
-            <Button size="sm" className="h-8 sm:h-9 text-xs sm:text-sm w-full sm:w-auto">
-              <Plus className="mr-2 h-3 w-3 sm:h-4 sm:w-4" /> Add New Card
-            </Button>
-          </div>
-        </div>
+              </div>
+            </div>
 
-        <div className="relative py-4 sm:py-6">
-          <Carousel className="w-full">
-            <CarouselContent className="-ml-2 sm:-ml-4">
-              {filteredPromotions.map((promo) => (
-                <CarouselItem key={promo.id} className="pl-2 sm:pl-4 basis-full sm:basis-1/2 md:basis-1/3 lg:basis-1/3">
-                  <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.4 }}
-                    className="h-full"
-                  >
-                    <Card className="h-full">
-                      <CardHeader className="p-4 sm:p-6">
-                        <div className="flex justify-between items-start">
-                          <div className="space-y-1">
-                            <CardTitle className="text-base sm:text-lg">{promo.title}</CardTitle>
-                            <CardDescription className="text-xs sm:text-sm">{promo.bank}</CardDescription>
-                          </div>
-                          {promo.category === "Cashback" ? (
-                            <Tag className="h-4 w-4 text-green-500" />
-                          ) : promo.category === "Points" ? (
-                            <Gift className="h-4 w-4 text-purple-500" />
-                          ) : (
-                            <CreditCard className="h-4 w-4 text-blue-500" />
-                          )}
-                        </div>
-                      </CardHeader>
-                      <CardContent className="p-4 sm:p-6 pt-0 sm:pt-0">
-                        <p className="text-xs sm:text-sm text-muted-foreground">
-                          {promo.description}
-                        </p>
-                        <div className="mt-4 text-xs text-muted-foreground">
-                          Valid until {new Date(promo.validUntil).toLocaleDateString()}
-                        </div>
-                      </CardContent>
-                    </Card>
-                  </motion.div>
-                </CarouselItem>
-              ))}
-            </CarouselContent>
-            <div className="hidden sm:block">
-              <CarouselPrevious className="left-0" />
-              <CarouselNext className="right-0" />
+            <div className="relative py-4 sm:py-6">
+              <Carousel className="w-full">
+                <CarouselContent className="-ml-2 sm:-ml-4">
+                  {filteredPromotions.map((promo) => (
+                    <CarouselItem key={promo.id} className="pl-2 sm:pl-4 basis-full sm:basis-1/2 md:basis-1/3 lg:basis-1/3">
+                      <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.4 }}
+                        className="h-full"
+                      >
+                        <Card className="h-full">
+                          <CardHeader className="p-4 sm:p-6">
+                            <div className="flex justify-between items-start">
+                              <div className="space-y-1">
+                                <CardTitle className="text-base sm:text-lg">{promo.title}</CardTitle>
+                                <CardDescription className="text-xs sm:text-sm">{promo.bank}</CardDescription>
+                              </div>
+                              {promo.category === "Cashback" ? (
+                                <Tag className="h-4 w-4 text-green-500" />
+                              ) : promo.category === "Points" ? (
+                                <Gift className="h-4 w-4 text-purple-500" />
+                              ) : (
+                                <CreditCard className="h-4 w-4 text-blue-500" />
+                              )}
+                            </div>
+                          </CardHeader>
+                          <CardContent className="p-4 sm:p-6 pt-0 sm:pt-0">
+                            <p className="text-xs sm:text-sm text-muted-foreground">
+                              {promo.description}
+                            </p>
+                            <div className="mt-4 text-xs text-muted-foreground">
+                              Valid until {new Date(promo.validUntil).toLocaleDateString()}
+                            </div>
+                          </CardContent>
+                        </Card>
+                      </motion.div>
+                    </CarouselItem>
+                  ))}
+                </CarouselContent>
+                <div className="hidden sm:block">
+                  <CarouselPrevious ref={prevBtnRef} className="left-0" />
+                  <CarouselNext ref={nextBtnRef} className="right-0" />
+                </div>
+                <div className="flex justify-center mt-4 sm:hidden">
+                  <Button variant="outline" size="sm" className="mx-1" onClick={handlePrevious}>
+                    Previous
+                  </Button>
+                  <Button variant="outline" size="sm" className="mx-1" onClick={handleNext}>
+                    Next
+                  </Button>
+                </div>
+              </Carousel>
             </div>
-            <div className="flex justify-center mt-4 sm:hidden">
-              <Button variant="outline" size="sm" className="mx-1" onClick={() => document.querySelector('.carousel-prev')?.click()}>
-                Previous
-              </Button>
-              <Button variant="outline" size="sm" className="mx-1" onClick={() => document.querySelector('.carousel-next')?.click()}>
-                Next
-              </Button>
-            </div>
-          </Carousel>
-        </div>
+          </>
+        )}
       </main>
 
       <Footer />
