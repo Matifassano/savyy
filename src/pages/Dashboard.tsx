@@ -1,4 +1,3 @@
-
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -11,7 +10,6 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { MyCards } from "@/components/my-cards";
 
-// Mock data for promotions (replace with real data later)
 const promotions = [{
   id: 1,
   bank: "Chase",
@@ -49,7 +47,6 @@ const promotions = [{
   category: "Points"
 }];
 
-// Mock data for notifications
 const notifications = [{
   id: 1,
   title: "New Chase Promotion",
@@ -76,8 +73,8 @@ const notifications = [{
   read: true
 }];
 
-// Get unique categories from promotions
-const categories = ["All", ...new Set(promotions.map(promo => promo.category))];
+const categories = ["All", ...new Set(promotions.map(promo => promo.category)]);
+
 const Dashboard = () => {
   const [filter, setFilter] = useState("All");
   const [theme, setTheme] = useState<"light" | "dark">("light");
@@ -85,7 +82,6 @@ const Dashboard = () => {
   const prevBtnRef = useRef<HTMLButtonElement>(null);
   const nextBtnRef = useRef<HTMLButtonElement>(null);
 
-  // Load theme from localStorage on component mount
   useEffect(() => {
     const savedTheme = localStorage.getItem("theme") as "light" | "dark" | null;
     if (savedTheme) {
@@ -94,7 +90,6 @@ const Dashboard = () => {
     }
   }, []);
 
-  // Toggle theme function
   const toggleTheme = () => {
     const newTheme = theme === "light" ? "dark" : "light";
     setTheme(newTheme);
@@ -102,46 +97,53 @@ const Dashboard = () => {
     document.documentElement.classList.toggle("dark", newTheme === "dark");
   };
 
-  // Filter promotions based on selected category
   const filteredPromotions = filter === "All" ? promotions : promotions.filter(promo => promo.category === filter);
+
   const handlePrevious = () => {
     if (prevBtnRef.current) {
       prevBtnRef.current.click();
     }
   };
+
   const handleNext = () => {
     if (nextBtnRef.current) {
       nextBtnRef.current.click();
     }
   };
-  return <div className="min-h-screen bg-background flex flex-col">
+
+  return (
+    <div className="min-h-screen bg-background flex flex-col">
       <header className="border-b">
-        <div className="container mx-auto py-3 px-4 sm:py-4 sm:px-6">
-          <nav className="flex items-center justify-between">
-            <div className="flex items-center gap-4 sm:gap-8">
-              <Link to="/" className="text-xl sm:text-2xl font-bold text-primary">
+        <div className="container mx-auto py-4">
+          <nav className="flex items-center justify-between px-4">
+            <div className="flex items-center space-x-6">
+              <Link to="/" className="text-2xl font-bold text-primary">
                 PromoAlert
               </Link>
-              <div className="hidden md:flex gap-6">
-                <Link to="/dashboard" className="text-sm font-medium">
+              <div className="hidden md:flex items-center space-x-6">
+                <Link to="/dashboard" className="text-sm font-medium hover:text-primary transition-colors">
                   Dashboard
                 </Link>
-                <Button variant="ghost" className="text-sm font-medium p-0" onClick={() => setShowCards(!showCards)}>
+                <Button 
+                  variant="ghost" 
+                  className="text-sm font-medium p-0 h-auto hover:text-primary transition-colors" 
+                  onClick={() => setShowCards(!showCards)}
+                >
                   My Cards
                 </Button>
-                <Link to="/notifications" className="text-sm font-medium">
+                <Link to="/notifications" className="text-sm font-medium hover:text-primary transition-colors">
                   Notifications
                 </Link>
               </div>
             </div>
-            <div className="flex items-center gap-2 sm:gap-3">
-              <Button variant="ghost" size="icon" onClick={toggleTheme}>
-                {theme === "light" ? <Moon className="h-4 w-4 sm:h-5 sm:w-5" /> : <Sun className="h-4 w-4 sm:h-5 sm:w-5" />}
+            <div className="flex items-center space-x-4">
+              <Button variant="ghost" size="icon" onClick={toggleTheme} className="h-9 w-9">
+                {theme === "light" ? <Moon className="h-5 w-5" /> : <Sun className="h-5 w-5" />}
               </Button>
               <Sheet>
                 <SheetTrigger asChild>
-                  <Button variant="ghost" size="icon">
-                    <Bell className="h-4 w-4 sm:h-5 sm:w-5" />
+                  <Button variant="ghost" size="icon" className="h-9 w-9">
+                    <Bell className="h-5 w-5" />
                   </Button>
                 </SheetTrigger>
                 <SheetContent>
@@ -264,6 +266,8 @@ const Dashboard = () => {
       </main>
 
       <Footer />
-    </div>;
+    </div>
+  );
 };
+
 export default Dashboard;
