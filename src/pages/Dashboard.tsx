@@ -1,3 +1,4 @@
+
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -73,7 +74,9 @@ const notifications = [{
   read: true
 }];
 
-const categories = ["All", ...new Set(promotions.map(promo => promo.category)]);
+// Create categories array with unique categories from promotions
+const uniqueCategories = Array.from(new Set(promotions.map(promo => promo.category)));
+const categories = ["All", ...uniqueCategories];
 
 const Dashboard = () => {
   const [filter, setFilter] = useState("All");
