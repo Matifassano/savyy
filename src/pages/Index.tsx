@@ -1,4 +1,3 @@
-
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
@@ -12,7 +11,6 @@ const Index = () => {
   const { toast } = useToast();
   const [theme, setTheme] = useState<"light" | "dark">("light");
 
-  // Load theme from localStorage on component mount
   useEffect(() => {
     const savedTheme = localStorage.getItem("theme") as "light" | "dark" | null;
     if (savedTheme) {
@@ -21,7 +19,6 @@ const Index = () => {
     }
   }, []);
 
-  // Toggle theme function
   const toggleTheme = () => {
     const newTheme = theme === "light" ? "dark" : "light";
     setTheme(newTheme);
@@ -147,7 +144,16 @@ const Index = () => {
             </Button>
           </motion.div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 sm:gap-8 mt-16 sm:mt-24">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            className="text-center mt-16 sm:mt-24 mb-8"
+          >
+            <h2 className="text-2xl sm:text-3xl font-bold">Functions</h2>
+          </motion.div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 sm:gap-8">
             {features.map((feature, index) => (
               <motion.div
                 key={index}
@@ -166,7 +172,6 @@ const Index = () => {
           </div>
         </section>
 
-        {/* Pricing Section */}
         <section className="container mx-auto py-16 px-4">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
