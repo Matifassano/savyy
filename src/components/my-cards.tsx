@@ -1,13 +1,14 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { CreditCard, CheckCircle, AlertCircle, Plus, Edit, Trash2 } from "lucide-react";
+import { CreditCard, CheckCircle, AlertCircle, Plus, Edit, Trash2, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
+import { promotions, getPromotionsByBank } from "../pages/Dashboard";
 
 const initialCards = [
   {
@@ -67,6 +68,8 @@ export const MyCards = () => {
   const [isManageDialogOpen, setIsManageDialogOpen] = useState(false);
   const [selectedCard, setSelectedCard] = useState<typeof initialCards[0] | null>(null);
   const [editedCard, setEditedCard] = useState<typeof initialCards[0] | null>(null);
+  const [isOffersDialogOpen, setIsOffersDialogOpen] = useState(false);
+  const [cardOffers, setCardOffers] = useState<typeof promotions>([]);
 
   const toggleCardExpand = (cardId: number) => {
     setExpandedCard(expandedCard === cardId ? null : cardId);
@@ -170,6 +173,14 @@ export const MyCards = () => {
     });
   };
 
+  const openOffersDialog = (e: React.MouseEvent, card: typeof initialCards[0]) => {
+    e.stopPropagation();
+    const cardPromotions = getPromotionsByBank(card.bank);
+    setCardOffers(cardPromotions);
+    setSelectedCard(card);
+    setIsOffersDialogOpen(true);
+  };
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       {cards.map((card) => (
@@ -244,7 +255,13 @@ export const MyCards = () => {
                   >
                     Manage
                   </Button>
-                  <Button variant="default" size="sm">View Offers</Button>
+                  <Button 
+                    variant="default" 
+                    size="sm" 
+                    onClick={(e) => openOffersDialog(e, card)}
+                  >
+                    View Offers
+                  </Button>
                 </CardFooter>
               </motion.div>
             )}
@@ -446,6 +463,63 @@ export const MyCards = () => {
                 Save Changes
               </Button>
             </div>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={isOffersDialogOpen} onOpenChange={setIsOffersDialogOpen}>
+        <DialogContent className="sm:max-w-[550px]">
+          <DialogHeader>
+            <DialogTitle>
+              {selectedCard?.bank} Offers
+              {selectedCard && <span className="ml-2 text-sm font-normal text-muted-foreground">
+                ({selectedCard.name})
+              </span>}
+            </DialogTitle>
+            <DialogDescription>
+              Current promotions available for your card
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="py-4">
+            {cardOffers.length > 0 ? (
+              <div className="space-y-4">
+                {cardOffers.map((offer) => (
+                  <Card key={offer.id} className="overflow-hidden hover:shadow-md transition-shadow">
+                    <CardHeader className="p-4">
+                      <div className="flex justify-between items-start">
+                        <div>
+                          <CardTitle className="text-base">{offer.title}</CardTitle>
+                          <CardDescription className="text-xs">
+                            Valid until {new Date(offer.validUntil).toLocaleDateString()}
+                          </CardDescription>
+                        </div>
+                        <div className="bg-primary/10 text-primary text-xs px-2 py-1 rounded-full">
+                          {offer.category}
+                        </div>
+                      </div>
+                    </CardHeader>
+                    <CardContent className="p-4 pt-0">
+                      <p className="text-sm text-muted-foreground">
+                        {offer.description}
+                      </p>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-8">
+                <CreditCard className="h-10 w-10 mx-auto mb-4 text-muted-foreground" />
+                <h3 className="text-lg font-medium mb-2">No offers available</h3>
+                <p className="text-sm text-muted-foreground">
+                  There are currently no promotions available for this card.
+                </p>
+              </div>
+            )}
+          </div>
+          
+          <DialogFooter>
+            <Button onClick={() => setIsOffersDialogOpen(false)}>Close</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

@@ -1,4 +1,3 @@
-
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -11,9 +10,11 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { MyCards } from "@/components/my-cards";
 
+// Updated promotions to include a bank_id to match with card banks
 const promotions = [{
   id: 1,
   bank: "Chase",
+  bank_id: "chase",
   title: "10% Cashback on Electronics",
   description: "Get 10% cashback on all electronics purchases above $500",
   validUntil: "2024-05-01",
@@ -21,6 +22,7 @@ const promotions = [{
 }, {
   id: 2,
   bank: "American Express",
+  bank_id: "american_express",
   title: "Double Points on Dining",
   description: "Earn 2x points at restaurants worldwide",
   validUntil: "2024-04-15",
@@ -28,6 +30,7 @@ const promotions = [{
 }, {
   id: 3,
   bank: "Capital One",
+  bank_id: "capital_one",
   title: "Travel Insurance Bonus",
   description: "Free travel insurance on flights booked with your card",
   validUntil: "2024-06-30",
@@ -35,6 +38,7 @@ const promotions = [{
 }, {
   id: 4,
   bank: "Citibank",
+  bank_id: "citibank",
   title: "5% Cash Back on Groceries",
   description: "Earn 5% cash back on grocery store purchases up to $500 monthly",
   validUntil: "2024-07-15",
@@ -42,11 +46,26 @@ const promotions = [{
 }, {
   id: 5,
   bank: "Discover",
+  bank_id: "discover",
   title: "3x Points on Gas",
   description: "Triple points on all gas station purchases",
   validUntil: "2024-05-30",
   category: "Points"
 }];
+
+// Helper function to get bank_id from bank name
+export const getBankId = (bankName: string): string => {
+  return bankName.toLowerCase().replace(/\s+/g, '_');
+};
+
+// Function to get promotions by bank name
+export const getPromotionsByBank = (bankName: string) => {
+  const bankId = getBankId(bankName);
+  return promotions.filter(promo => promo.bank_id === bankId);
+};
+
+// Export promotions for use in other components
+export { promotions };
 
 const notifications = [{
   id: 1,
