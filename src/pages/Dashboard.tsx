@@ -2,7 +2,7 @@
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Bell, CreditCard, Gift, Plus, Tag, Filter, Moon, Sun } from "lucide-react";
+import { Bell, CreditCard, Gift, Plus, Tag, Filter, Moon, Sun, ExternalLink } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Footer } from "./Login";
 import { useState, useEffect, useRef } from "react";
@@ -270,9 +270,6 @@ const Dashboard = () => {
                 PromoAlert
               </Link>
               <div className="hidden md:flex items-center space-x-6">
-                <Link to="/dashboard" className="text-sm font-medium hover:text-primary transition-colors">
-                  Dashboard
-                </Link>
                 <Button 
                   variant="ghost" 
                   className="text-sm font-medium p-0 h-auto hover:text-primary transition-colors" 
@@ -280,9 +277,6 @@ const Dashboard = () => {
                 >
                   My Cards
                 </Button>
-                <Link to="/notifications" className="text-sm font-medium hover:text-primary transition-colors">
-                  Notifications
-                </Link>
               </div>
             </div>
             <div className="flex items-center space-x-4">
@@ -474,8 +468,14 @@ const Dashboard = () => {
                               <p className="text-xs sm:text-sm text-muted-foreground">
                                 {promo.description}
                               </p>
-                              <div className="mt-4 text-xs text-muted-foreground">
-                                Valid until {new Date(promo.validUntil).toLocaleDateString()}
+                              <div className="mt-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
+                                <span className="text-xs text-muted-foreground">
+                                  Valid until {new Date(promo.validUntil).toLocaleDateString()}
+                                </span>
+                                <Button size="sm" variant="outline" className="text-xs w-full sm:w-auto flex items-center gap-1.5">
+                                  <ExternalLink className="h-3 w-3" />
+                                  Link to Promotion
+                                </Button>
                               </div>
                             </CardContent>
                           </Card>

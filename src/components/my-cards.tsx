@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { CreditCard, CheckCircle, AlertCircle, Plus, Edit, Trash2, X } from "lucide-react";
+import { CreditCard, CheckCircle, AlertCircle, Plus, Edit, Trash2, ExternalLink } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
@@ -503,6 +503,16 @@ export const MyCards = () => {
                       <p className="text-sm text-muted-foreground">
                         {offer.description}
                       </p>
+                      <div className="flex justify-end mt-3">
+                        <Button 
+                          size="sm" 
+                          variant="outline" 
+                          className="text-xs flex items-center gap-1.5"
+                        >
+                          <ExternalLink className="h-3 w-3" />
+                          Link to Promotion
+                        </Button>
+                      </div>
                     </CardContent>
                   </Card>
                 ))}
