@@ -1,4 +1,5 @@
-import { useState } from "react";
+
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { CreditCard, CheckCircle, AlertCircle, Plus, Edit, Trash2, ExternalLink } from "lucide-react";
@@ -10,7 +11,7 @@ import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
 import { promotions, getPromotionsByBank } from "../pages/Dashboard";
 
-const initialCards = [
+export const initialCards = [
   {
     id: 1,
     bank: "Chase",
@@ -53,7 +54,11 @@ const initialCards = [
   }
 ];
 
-export const MyCards = () => {
+interface MyCardsProps {
+  onCardsChange?: (cards: typeof initialCards) => void;
+}
+
+export const MyCards = ({ onCardsChange }: MyCardsProps) => {
   const [expandedCard, setExpandedCard] = useState<number | null>(null);
   const [cards, setCards] = useState(initialCards);
   const [newCard, setNewCard] = useState({
@@ -70,6 +75,12 @@ export const MyCards = () => {
   const [editedCard, setEditedCard] = useState<typeof initialCards[0] | null>(null);
   const [isOffersDialogOpen, setIsOffersDialogOpen] = useState(false);
   const [cardOffers, setCardOffers] = useState<typeof promotions>([]);
+
+  useEffect(() => {
+    if (onCardsChange) {
+      onCardsChange(cards);
+    }
+  }, [cards, onCardsChange]);
 
   const toggleCardExpand = (cardId: number) => {
     setExpandedCard(expandedCard === cardId ? null : cardId);
@@ -125,7 +136,12 @@ export const MyCards = () => {
       color: randomColor
     };
     
-    setCards([...cards, newCardWithId]);
+    const updatedCards = [...cards, newCardWithId];
+    setCards(updatedCards);
+    
+    if (onCardsChange) {
+      onCardsChange(updatedCards);
+    }
     
     setNewCard({
       bank: "",
@@ -137,6 +153,10 @@ export const MyCards = () => {
     });
     
     setIsDialogOpen(false);
+    
+    toast.success("Card added successfully", {
+      description: `${newCardWithId.name} has been added to your account.`
+    });
   };
 
   const openManageDialog = (e: React.MouseEvent, card: typeof initialCards[0]) => {
@@ -154,6 +174,11 @@ export const MyCards = () => {
     );
     
     setCards(updatedCards);
+    
+    if (onCardsChange) {
+      onCardsChange(updatedCards);
+    }
+    
     setIsManageDialogOpen(false);
     
     toast.success("Card updated successfully", {
@@ -166,6 +191,11 @@ export const MyCards = () => {
     
     const updatedCards = cards.filter(card => card.id !== selectedCard.id);
     setCards(updatedCards);
+    
+    if (onCardsChange) {
+      onCardsChange(updatedCards);
+    }
+    
     setIsManageDialogOpen(false);
     
     toast.success("Card removed", {

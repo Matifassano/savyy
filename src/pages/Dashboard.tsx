@@ -128,6 +128,11 @@ export const getPromotionsByBank = (bankName: string) => {
 // Export promotions for use in other components
 export { promotions };
 
+// Function to get available banks from cards
+export const getAvailableBanksFromCards = (cards: any[]) => {
+  return Array.from(new Set(cards.map(card => card.bank)));
+};
+
 // Create arrays for filter options
 const uniqueCategories = Array.from(new Set(promotions.map(promo => promo.category)));
 const categories = ["All", ...uniqueCategories];
@@ -183,6 +188,8 @@ const Dashboard = () => {
   const [showCards, setShowCards] = useState(false);
   const prevBtnRef = useRef<HTMLButtonElement>(null);
   const nextBtnRef = useRef<HTMLButtonElement>(null);
+  const [availableBanks, setAvailableBanks] = useState<string[]>([]);
+  const [showOnlyCompatible, setShowOnlyCompatible] = useState(true);
 
   useEffect(() => {
     const savedTheme = localStorage.getItem("theme") as "light" | "dark" | null;
@@ -190,6 +197,12 @@ const Dashboard = () => {
       setTheme(savedTheme);
       document.documentElement.classList.toggle("dark", savedTheme === "dark");
     }
+    
+    // Get banks from initial cards
+    import("@/components/my-cards").then(({ initialCards }) => {
+      const banks = getAvailableBanksFromCards(initialCards);
+      setAvailableBanks(banks);
+    });
   }, []);
 
   const toggleTheme = () => {
@@ -199,8 +212,13 @@ const Dashboard = () => {
     document.documentElement.classList.toggle("dark", newTheme === "dark");
   };
 
-  // Updated filter function to handle multiple filter criteria
+  // Updated filter function to handle multiple filter criteria and compatibility with user's cards
   const filteredPromotions = promotions.filter(promo => {
+    // Filter by bank compatibility if enabled
+    if (showOnlyCompatible && availableBanks.length > 0 && !availableBanks.includes(promo.bank)) {
+      return false;
+    }
+    
     // Filter by category
     if (filters.category !== "All" && promo.category !== filters.category) {
       return false;
@@ -327,7 +345,10 @@ const Dashboard = () => {
                 Back to Promotions
               </Button>
             </div>
-            <MyCards />
+            <MyCards onCardsChange={(cards) => {
+              const banks = getAvailableBanksFromCards(cards);
+              setAvailableBanks(banks);
+            }} />
           </div> : <>
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 sm:gap-0 mb-6 sm:mb-8">
               <div>
@@ -427,6 +448,18 @@ const Dashboard = () => {
                           {type}
                         </DropdownMenuItem>
                       ))}
+                      
+                      <div className="mt-3 pt-2 border-t">
+                        <label className="flex items-center text-xs font-medium space-x-2">
+                          <input 
+                            type="checkbox" 
+                            checked={showOnlyCompatible} 
+                            onChange={(e) => setShowOnlyCompatible(e.target.checked)}
+                            className="rounded border-gray-300 text-primary focus:ring-primary"
+                          />
+                          <span>Show only compatible with my cards</span>
+                        </label>
+                      </div>
                     </div>
                   </DropdownMenuContent>
                 </DropdownMenu>
@@ -502,12 +535,15 @@ const Dashboard = () => {
                   <p className="text-muted-foreground mb-4">
                     Try adjusting your filters to see more results
                   </p>
-                  <Button onClick={() => setFilters({
-                    category: "All",
-                    bank: "All Banks",
-                    age: "All Promotions",
-                    cardType: "All Cards"
-                  })}>
+                  <Button onClick={() => {
+                    setFilters({
+                      category: "All",
+                      bank: "All Banks",
+                      age: "All Promotions",
+                      cardType: "All Cards"
+                    });
+                    setShowOnlyCompatible(false);
+                  }}>
                     Reset Filters
                   </Button>
                 </div>
