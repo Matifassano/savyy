@@ -1,13 +1,14 @@
-
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { CreditCard, CheckCircle, AlertCircle, Plus } from "lucide-react";
+import { CreditCard, CheckCircle, AlertCircle, Plus, Edit, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
+import { toast } from "sonner";
 
-// Mock data for credit cards
 const initialCards = [
   {
     id: 1,
@@ -63,6 +64,9 @@ export const MyCards = () => {
     status: "active"
   });
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isManageDialogOpen, setIsManageDialogOpen] = useState(false);
+  const [selectedCard, setSelectedCard] = useState<typeof initialCards[0] | null>(null);
+  const [editedCard, setEditedCard] = useState<typeof initialCards[0] | null>(null);
 
   const toggleCardExpand = (cardId: number) => {
     setExpandedCard(expandedCard === cardId ? null : cardId);
@@ -76,8 +80,26 @@ export const MyCards = () => {
     }));
   };
 
+  const handleEditInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!editedCard) return;
+    
+    const { name, value } = e.target;
+    setEditedCard(prev => ({
+      ...prev!,
+      [name]: value
+    }));
+  };
+
+  const handleStatusToggle = (checked: boolean) => {
+    if (!editedCard) return;
+    
+    setEditedCard(prev => ({
+      ...prev!,
+      status: checked ? "active" : "inactive"
+    }));
+  };
+
   const handleAddCard = () => {
-    // Generate a random color gradient for the new card
     const colors = [
       "bg-gradient-to-r from-blue-600 to-blue-800",
       "bg-gradient-to-r from-green-600 to-green-800",
@@ -88,13 +110,11 @@ export const MyCards = () => {
     ];
     const randomColor = colors[Math.floor(Math.random() * colors.length)];
     
-    // Format card number with asterisks
     let formattedNumber = newCard.number;
     if (formattedNumber.length >= 4) {
       formattedNumber = `**** **** **** ${formattedNumber.slice(-4)}`;
     }
 
-    // Add the new card to the cards array
     const newCardWithId = {
       ...newCard,
       id: cards.length + 1,
@@ -104,7 +124,6 @@ export const MyCards = () => {
     
     setCards([...cards, newCardWithId]);
     
-    // Reset the new card form
     setNewCard({
       bank: "",
       name: "",
@@ -114,8 +133,41 @@ export const MyCards = () => {
       status: "active"
     });
     
-    // Close the dialog
     setIsDialogOpen(false);
+  };
+
+  const openManageDialog = (e: React.MouseEvent, card: typeof initialCards[0]) => {
+    e.stopPropagation();
+    setSelectedCard(card);
+    setEditedCard({...card});
+    setIsManageDialogOpen(true);
+  };
+
+  const handleSaveChanges = () => {
+    if (!editedCard) return;
+
+    const updatedCards = cards.map(card => 
+      card.id === editedCard.id ? editedCard : card
+    );
+    
+    setCards(updatedCards);
+    setIsManageDialogOpen(false);
+    
+    toast.success("Card updated successfully", {
+      description: `${editedCard.name} has been updated.`
+    });
+  };
+
+  const handleDeleteCard = () => {
+    if (!selectedCard) return;
+    
+    const updatedCards = cards.filter(card => card.id !== selectedCard.id);
+    setCards(updatedCards);
+    setIsManageDialogOpen(false);
+    
+    toast.success("Card removed", {
+      description: `${selectedCard.name} has been removed from your account.`
+    });
   };
 
   return (
@@ -185,7 +237,13 @@ export const MyCards = () => {
                   </div>
                 </CardContent>
                 <CardFooter className="flex justify-end gap-2 pt-0">
-                  <Button variant="outline" size="sm">Manage</Button>
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    onClick={(e) => openManageDialog(e, card)}
+                  >
+                    Manage
+                  </Button>
                   <Button variant="default" size="sm">View Offers</Button>
                 </CardFooter>
               </motion.div>
@@ -292,6 +350,102 @@ export const MyCards = () => {
           </div>
           <DialogFooter>
             <Button type="button" onClick={handleAddCard}>Add Card</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={isManageDialogOpen} onOpenChange={setIsManageDialogOpen}>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>Manage Card</DialogTitle>
+            <DialogDescription>
+              Update your card details or change its status.
+            </DialogDescription>
+          </DialogHeader>
+          {editedCard && (
+            <div className="grid gap-4 py-4">
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="edit-bank" className="text-right">Bank</Label>
+                <Input
+                  id="edit-bank"
+                  name="bank"
+                  value={editedCard.bank}
+                  onChange={handleEditInputChange}
+                  className="col-span-3"
+                />
+              </div>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="edit-name" className="text-right">Card Name</Label>
+                <Input
+                  id="edit-name"
+                  name="name"
+                  value={editedCard.name}
+                  onChange={handleEditInputChange}
+                  className="col-span-3"
+                />
+              </div>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="edit-type" className="text-right">Card Type</Label>
+                <Input
+                  id="edit-type"
+                  name="type"
+                  value={editedCard.type}
+                  onChange={handleEditInputChange}
+                  className="col-span-3"
+                />
+              </div>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="edit-expiry" className="text-right">Expiry Date</Label>
+                <Input
+                  id="edit-expiry"
+                  name="expiry"
+                  value={editedCard.expiry}
+                  onChange={handleEditInputChange}
+                  className="col-span-3"
+                />
+              </div>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="edit-status" className="text-right">Active</Label>
+                <div className="col-span-3 flex items-center">
+                  <Switch 
+                    id="edit-status"
+                    checked={editedCard.status === "active"}
+                    onCheckedChange={handleStatusToggle}
+                  />
+                  <span className="ml-2 text-sm capitalize">
+                    {editedCard.status}
+                  </span>
+                </div>
+              </div>
+            </div>
+          )}
+          <DialogFooter className="flex justify-between sm:justify-between">
+            <Button 
+              type="button" 
+              variant="destructive" 
+              onClick={handleDeleteCard}
+              className="flex items-center gap-2"
+            >
+              <Trash2 className="h-4 w-4" />
+              Remove
+            </Button>
+            <div className="flex gap-2">
+              <Button 
+                type="button" 
+                variant="outline" 
+                onClick={() => setIsManageDialogOpen(false)}
+              >
+                Cancel
+              </Button>
+              <Button 
+                type="button" 
+                onClick={handleSaveChanges}
+                className="flex items-center gap-2"
+              >
+                <Edit className="h-4 w-4" />
+                Save Changes
+              </Button>
+            </div>
           </DialogFooter>
         </DialogContent>
       </Dialog>
