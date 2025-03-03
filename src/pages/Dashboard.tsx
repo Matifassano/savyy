@@ -1,14 +1,17 @@
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Bell, CreditCard, Gift, Plus, Tag, Filter, Moon, Sun, ExternalLink } from "lucide-react";
+import { Bell, CreditCard, Gift, Plus, Tag, Filter, Moon, Sun, ExternalLink, Trash2, Wallet, Link2, Smartphone, Wifi } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Footer } from "./Login";
 import { useState, useEffect, useRef } from "react";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { MyCards } from "@/components/my-cards";
+import { useToast } from "@/hooks/use-toast";
+import { Separator } from "@/components/ui/separator";
+import { Input } from "@/components/ui/input";
 
 const promotions = [{
   id: 1,
@@ -162,6 +165,37 @@ const notifications = [{
   read: true
 }];
 
+const connectedApps = [
+  { 
+    id: 'mint',
+    name: 'Mint',
+    icon: <Wallet className="h-8 w-8 text-green-500" />,
+    connected: false,
+    description: 'Track your spending and budget across all accounts'
+  },
+  { 
+    id: 'plaid',
+    name: 'Plaid',
+    icon: <Link2 className="h-8 w-8 text-blue-500" />,
+    connected: false,
+    description: 'Securely connect your bank accounts to financial apps'
+  },
+  { 
+    id: 'venmo',
+    name: 'Venmo',
+    icon: <Smartphone className="h-8 w-8 text-purple-500" />,
+    connected: true,
+    description: 'Send and receive money with friends and family'
+  },
+  { 
+    id: 'zelle',
+    name: 'Zelle',
+    icon: <Wifi className="h-8 w-8 text-violet-500" />,
+    connected: false,
+    description: 'Send money directly between almost any U.S. bank accounts'
+  }
+];
+
 type FilterType = {
   category: string;
   bank: string;
@@ -183,6 +217,10 @@ const Dashboard = () => {
   const nextBtnRef = useRef<HTMLButtonElement>(null);
   const [availableBanks, setAvailableBanks] = useState<string[]>([]);
   const [showOnlyCompatible, setShowOnlyCompatible] = useState(true);
+  const [userNotifications, setUserNotifications] = useState(notifications);
+  const [connectedAppsList, setConnectedAppsList] = useState(connectedApps);
+  const [showConnectedApps, setShowConnectedApps] = useState(false);
+  const { toast } = useToast();
 
   useEffect(() => {
     const savedTheme = localStorage.getItem("theme") as "light" | "dark" | null;
@@ -264,6 +302,29 @@ const Dashboard = () => {
     }
   };
 
+  const handleClearAllNotifications = () => {
+    setUserNotifications([]);
+    toast({
+      title: "Success",
+      description: "All notifications have been cleared",
+    });
+  };
+
+  const toggleAppConnection = (appId: string) => {
+    const updatedApps = connectedAppsList.map(app => 
+      app.id === appId ? { ...app, connected: !app.connected } : app
+    );
+    setConnectedAppsList(updatedApps);
+    
+    const app = connectedAppsList.find(a => a.id === appId);
+    if (app) {
+      toast({
+        title: app.connected ? "Disconnected" : "Connected",
+        description: `${app.name} has been ${app.connected ? "disconnected" : "connected"} successfully`,
+      });
+    }
+  };
+
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <header className="border-b">
@@ -292,21 +353,41 @@ const Dashboard = () => {
                     </SheetDescription>
                   </SheetHeader>
                   <div className="mt-6 space-y-4">
-                    {notifications.map(notification => <div key={notification.id} className={`p-4 rounded-lg border ${!notification.read ? "bg-primary/5 border-primary/20" : ""}`}>
-                        <div className="flex justify-between items-start">
-                          <h4 className={`text-sm font-medium ${!notification.read ? "text-primary" : ""}`}>
-                            {notification.title}
-                          </h4>
-                          {!notification.read && <div className="h-2 w-2 rounded-full bg-primary"></div>}
+                    {userNotifications.length > 0 ? (
+                      userNotifications.map(notification => (
+                        <div key={notification.id} className={`p-4 rounded-lg border ${!notification.read ? "bg-primary/5 border-primary/20" : ""}`}>
+                          <div className="flex justify-between items-start">
+                            <h4 className={`text-sm font-medium ${!notification.read ? "text-primary" : ""}`}>
+                              {notification.title}
+                            </h4>
+                            {!notification.read && <div className="h-2 w-2 rounded-full bg-primary"></div>}
+                          </div>
+                          <p className="text-sm text-muted-foreground mt-1">
+                            {notification.description}
+                          </p>
+                          <p className="text-xs text-muted-foreground mt-2">
+                            {notification.time}
+                          </p>
                         </div>
-                        <p className="text-sm text-muted-foreground mt-1">
-                          {notification.description}
-                        </p>
-                        <p className="text-xs text-muted-foreground mt-2">
-                          {notification.time}
-                        </p>
-                      </div>)}
+                      ))
+                    ) : (
+                      <div className="text-center py-8">
+                        <Bell className="h-8 w-8 mx-auto text-muted-foreground mb-2" />
+                        <p className="text-muted-foreground">No notifications</p>
+                      </div>
+                    )}
                   </div>
+                  <SheetFooter className="mt-6 flex-col">
+                    <Button 
+                      variant="outline" 
+                      className="w-full" 
+                      onClick={handleClearAllNotifications}
+                      disabled={userNotifications.length === 0}
+                    >
+                      <Trash2 className="mr-2 h-4 w-4" />
+                      Delete All Notifications
+                    </Button>
+                  </SheetFooter>
                 </SheetContent>
               </Sheet>
             </div>
@@ -315,7 +396,8 @@ const Dashboard = () => {
       </header>
 
       <main className="flex-1 container mx-auto py-6 px-4 sm:py-8 sm:px-6">
-        {showCards ? <div className="mb-6">
+        {showCards ? (
+          <div className="mb-6">
             <div className="flex justify-between items-center mb-6">
               <h2 className="text-2xl font-bold">My Cards</h2>
               <Button size="sm" onClick={() => setShowCards(false)}>
@@ -326,7 +408,69 @@ const Dashboard = () => {
               const banks = getAvailableBanksFromCards(cards);
               setAvailableBanks(banks);
             }} />
-          </div> : <>
+          </div>
+        ) : showConnectedApps ? (
+          <div className="mb-6">
+            <div className="flex justify-between items-center mb-6">
+              <h2 className="text-2xl font-bold">Connected Apps</h2>
+              <Button size="sm" onClick={() => setShowConnectedApps(false)}>
+                Back to Promotions
+              </Button>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {connectedAppsList.map(app => (
+                <Card key={app.id} className={app.connected ? "border-primary/50" : ""}>
+                  <CardHeader className="pb-2">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        {app.icon}
+                        <CardTitle>{app.name}</CardTitle>
+                      </div>
+                      <div className={`px-2 py-1 text-xs rounded-full ${app.connected ? "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300" : "bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-300"}`}>
+                        {app.connected ? "Connected" : "Not Connected"}
+                      </div>
+                    </div>
+                    <CardDescription className="mt-2">{app.description}</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <Button 
+                      variant={app.connected ? "outline" : "default"} 
+                      className="w-full mt-2"
+                      onClick={() => toggleAppConnection(app.id)}
+                    >
+                      {app.connected ? "Disconnect" : "Connect"}
+                    </Button>
+                  </CardContent>
+                </Card>
+              ))}
+              
+              <Card className="border-dashed">
+                <CardHeader className="pb-2">
+                  <div className="flex items-center gap-3">
+                    <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center">
+                      <Plus className="h-5 w-5 text-primary" />
+                    </div>
+                    <CardTitle>Add Custom Integration</CardTitle>
+                  </div>
+                  <CardDescription className="mt-2">
+                    Connect with other banking or financial applications
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <Input
+                    placeholder="Enter integration API key or URL"
+                    className="mb-3"
+                  />
+                  <Button className="w-full">
+                    Connect Custom App
+                  </Button>
+                </CardContent>
+              </Card>
+            </div>
+          </div>
+        ) : (
+          <>
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 sm:gap-0 mb-6 sm:mb-8">
               <div>
                 <h1 className="text-2xl sm:text-3xl font-bold">Welcome back!</h1>
@@ -443,6 +587,9 @@ const Dashboard = () => {
                 <Button size="sm" className="h-8 sm:h-9 text-xs sm:text-sm w-full sm:w-auto" onClick={() => setShowCards(true)}>
                   <CreditCard className="mr-2 h-3 w-3 sm:h-4 sm:w-4" /> My Cards
                 </Button>
+                <Button size="sm" className="h-8 sm:h-9 text-xs sm:text-sm w-full sm:w-auto" onClick={() => setShowConnectedApps(true)}>
+                  <Link2 className="mr-2 h-3 w-3 sm:h-4 sm:w-4" /> Connected Apps
+                </Button>
               </div>
             </div>
 
@@ -526,7 +673,33 @@ const Dashboard = () => {
                 </div>
               )}
             </div>
-          </>}
+            
+            <div className="mt-12">
+              <div className="flex justify-between items-center mb-6">
+                <h2 className="text-xl font-bold">Connected Banking Apps</h2>
+                <Button size="sm" variant="outline" onClick={() => setShowConnectedApps(true)}>
+                  View All
+                </Button>
+              </div>
+              
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+                {connectedAppsList.slice(0, 4).map(app => (
+                  <Card key={app.id} className={`${app.connected ? "border-primary/50" : ""} hover:shadow-md transition-shadow`}>
+                    <CardContent className="p-4 flex flex-col items-center text-center">
+                      <div className="my-3">
+                        {app.icon}
+                      </div>
+                      <h3 className="font-medium">{app.name}</h3>
+                      <span className={`mt-1 text-xs px-2 py-0.5 rounded-full ${app.connected ? "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300" : "bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-300"}`}>
+                        {app.connected ? "Connected" : "Not Connected"}
+                      </span>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </div>
+          </>
+        )}
       </main>
 
       <Footer />
