@@ -1,7 +1,7 @@
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Bell, CreditCard, Gift, Plus, Tag, Filter, Moon, Sun, ExternalLink, Trash2, Wallet, Link2, Smartphone, Wifi } from "lucide-react";
+import { Bell, CreditCard, Gift, Plus, Tag, Filter, Moon, Sun, ExternalLink, Trash2, Wallet, Link2, Smartphone, Wifi, Bot, MessageCircle } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Footer } from "./Login";
 import { useState, useEffect, useRef } from "react";
@@ -12,6 +12,14 @@ import { MyCards } from "@/components/my-cards";
 import { useToast } from "@/hooks/use-toast";
 import { Separator } from "@/components/ui/separator";
 import { Input } from "@/components/ui/input";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 
 const promotions = [{
   id: 1,
@@ -139,39 +147,44 @@ const banks = ["All Banks", ...uniqueBanks];
 const cardTypes = ["All Cards", "Credit", "Debit"];
 const ageOptions = ["All Promotions", "New", "Existing"];
 
-const notifications = [{
-  id: 1,
-  title: "New Chase Promotion",
-  description: "Chase has added a new cashback offer for electronics",
-  time: "10 minutes ago",
-  read: false
-}, {
-  id: 2,
-  title: "Promotion Expiring Soon",
-  description: "American Express dining points promotion expires in 2 days",
-  time: "2 hours ago",
-  read: true
-}, {
-  id: 3,
-  title: "Card Added Successfully",
-  description: "Your Capital One Venture card has been added to your account",
-  time: "Yesterday",
-  read: true
-}, {
-  id: 4,
-  title: "Limited Time Offer",
-  description: "Citibank is offering 5% cashback on all purchases this weekend",
-  time: "2 days ago",
-  read: true
-}];
+const notifications = [
+  {
+    id: 1,
+    title: "New Chase Promotion",
+    description: "Chase has added a new cashback offer for electronics",
+    time: "10 minutes ago",
+    read: false
+  },
+  {
+    id: 2,
+    title: "Promotion Expiring Soon",
+    description: "American Express dining points promotion expires in 2 days",
+    time: "2 hours ago",
+    read: true
+  },
+  {
+    id: 3,
+    title: "Card Added Successfully",
+    description: "Your Capital One Venture card has been added to your account",
+    time: "Yesterday",
+    read: true
+  },
+  {
+    id: 4,
+    title: "Limited Time Offer",
+    description: "Citibank is offering 5% cashback on all purchases this weekend",
+    time: "2 days ago",
+    read: true
+  }
+];
 
 const connectedApps = [
   { 
-    id: 'mint',
-    name: 'Mint',
-    icon: <Wallet className="h-8 w-8 text-green-500" />,
+    id: 'zeny',
+    name: 'Zeny',
+    icon: <Bot className="h-8 w-8 text-blue-500" />,
     connected: false,
-    description: 'Track your spending and budget across all accounts'
+    description: 'A minimalist finance chatbot to manage your personal finances'
   },
   { 
     id: 'plaid',
@@ -614,7 +627,7 @@ const Dashboard = () => {
                                   <CardTitle className="text-base sm:text-lg">{promo.title}</CardTitle>
                                   <CardDescription className="text-xs sm:text-sm">
                                     {promo.bank} 
-                                    {promo.isNew && <span className="ml-2 inline-block px-1.5 py-0.5 bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300 text-[10px] rounded-full">New</span>}
+                                    {promo.isNew && <span className="ml-2 inline-block px-1.5 py-0.5 bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300">New</span>}
                                     <span className="ml-2 inline-block px-1.5 py-0.5 bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300 text-[10px] rounded-full capitalize">{promo.cardType}</span>
                                   </CardDescription>
                                 </div>
@@ -676,10 +689,39 @@ const Dashboard = () => {
             
             <div className="mt-12">
               <div className="flex justify-between items-center mb-6">
-                <h2 className="text-xl font-bold">Connected Banking Apps</h2>
-                <Button size="sm" variant="outline" onClick={() => setShowConnectedApps(true)}>
-                  View All
-                </Button>
+                <h2 className="text-xl font-bold">Connect with Zeny</h2>
+                <Dialog>
+                  <DialogTrigger asChild>
+                    <Button size="sm" variant="outline">
+                      <MessageCircle className="mr-2 h-4 w-4" />
+                      What is Zeny?
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent className="sm:max-w-md">
+                    <DialogHeader>
+                      <DialogTitle>About Zeny</DialogTitle>
+                      <DialogDescription>
+                        Zeny is a minimalist web application that helps you manage your personal finances calmly and simply through an intuitive chatbot.
+                      </DialogDescription>
+                    </DialogHeader>
+                    <div className="grid gap-4 py-4">
+                      <div className="flex flex-col gap-2">
+                        <h3 className="font-medium">Key Features:</h3>
+                        <ul className="list-disc list-inside text-sm text-muted-foreground ml-2 space-y-1">
+                          <li>Simple expense tracking</li>
+                          <li>Personalized financial insights</li>
+                          <li>Budget recommendations</li>
+                          <li>Natural language finance management</li>
+                        </ul>
+                      </div>
+                    </div>
+                    <div className="flex justify-end">
+                      <Button type="button">
+                        Connect Now
+                      </Button>
+                    </div>
+                  </DialogContent>
+                </Dialog>
               </div>
               
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
