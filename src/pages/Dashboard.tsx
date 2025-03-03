@@ -1,4 +1,3 @@
-
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -11,7 +10,6 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { MyCards } from "@/components/my-cards";
 
-// Updated promotions to include a bank_id, isNew flag, and cardType fields
 const promotions = [{
   id: 1,
   bank: "Chase",
@@ -114,26 +112,21 @@ const promotions = [{
   cardType: "debit"
 }];
 
-// Helper function to get bank_id from bank name
 export const getBankId = (bankName: string): string => {
   return bankName.toLowerCase().replace(/\s+/g, '_');
 };
 
-// Function to get promotions by bank name
 export const getPromotionsByBank = (bankName: string) => {
   const bankId = getBankId(bankName);
   return promotions.filter(promo => promo.bank_id === bankId);
 };
 
-// Export promotions for use in other components
 export { promotions };
 
-// Function to get available banks from cards
 export const getAvailableBanksFromCards = (cards: any[]) => {
   return Array.from(new Set(cards.map(card => card.bank)));
 };
 
-// Create arrays for filter options
 const uniqueCategories = Array.from(new Set(promotions.map(promo => promo.category)));
 const categories = ["All", ...uniqueCategories];
 
@@ -198,7 +191,6 @@ const Dashboard = () => {
       document.documentElement.classList.toggle("dark", savedTheme === "dark");
     }
     
-    // Get banks from initial cards
     import("@/components/my-cards").then(({ initialCards }) => {
       const banks = getAvailableBanksFromCards(initialCards);
       setAvailableBanks(banks);
@@ -212,31 +204,25 @@ const Dashboard = () => {
     document.documentElement.classList.toggle("dark", newTheme === "dark");
   };
 
-  // Updated filter function to handle multiple filter criteria and compatibility with user's cards
   const filteredPromotions = promotions.filter(promo => {
-    // Filter by bank compatibility if enabled
     if (showOnlyCompatible && availableBanks.length > 0 && !availableBanks.includes(promo.bank)) {
       return false;
     }
     
-    // Filter by category
     if (filters.category !== "All" && promo.category !== filters.category) {
       return false;
     }
     
-    // Filter by bank
     if (filters.bank !== "All Banks" && promo.bank !== filters.bank) {
       return false;
     }
     
-    // Filter by age (new/existing)
     if (filters.age === "New" && !promo.isNew) {
       return false;
     } else if (filters.age === "Existing" && promo.isNew) {
       return false;
     }
     
-    // Filter by card type (credit/debit)
     if (filters.cardType === "Credit" && promo.cardType !== "credit") {
       return false;
     } else if (filters.cardType === "Debit" && promo.cardType !== "debit") {
@@ -284,18 +270,9 @@ const Dashboard = () => {
         <div className="container mx-auto py-4">
           <nav className="flex items-center justify-between px-4">
             <div className="flex items-center space-x-6">
-              <Link to="/" className="text-2xl font-bold text-primary">
+              <Link to="/dashboard" className="text-2xl font-bold text-primary">
                 PromoAlert
               </Link>
-              <div className="hidden md:flex items-center space-x-6">
-                <Button 
-                  variant="ghost" 
-                  className="text-sm font-medium p-0 h-auto hover:text-primary transition-colors" 
-                  onClick={() => setShowCards(!showCards)}
-                >
-                  My Cards
-                </Button>
-              </div>
             </div>
             <div className="flex items-center space-x-4">
               <Button variant="ghost" size="icon" onClick={toggleTheme} className="h-9 w-9">
