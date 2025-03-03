@@ -185,27 +185,6 @@ const connectedApps = [
     icon: <Bot className="h-8 w-8 text-blue-500" />,
     connected: false,
     description: 'A minimalist finance chatbot to manage your personal finances'
-  },
-  { 
-    id: 'plaid',
-    name: 'Plaid',
-    icon: <Link2 className="h-8 w-8 text-blue-500" />,
-    connected: false,
-    description: 'Securely connect your bank accounts to financial apps'
-  },
-  { 
-    id: 'venmo',
-    name: 'Venmo',
-    icon: <Smartphone className="h-8 w-8 text-purple-500" />,
-    connected: true,
-    description: 'Send and receive money with friends and family'
-  },
-  { 
-    id: 'zelle',
-    name: 'Zelle',
-    icon: <Wifi className="h-8 w-8 text-violet-500" />,
-    connected: false,
-    description: 'Send money directly between almost any U.S. bank accounts'
   }
 ];
 
@@ -690,42 +669,19 @@ const Dashboard = () => {
             <div className="mt-12">
               <div className="flex justify-between items-center mb-6">
                 <h2 className="text-xl font-bold">Connect with Zeny</h2>
-                <Dialog>
-                  <DialogTrigger asChild>
-                    <Button size="sm" variant="outline">
-                      <MessageCircle className="mr-2 h-4 w-4" />
-                      What is Zeny?
-                    </Button>
-                  </DialogTrigger>
-                  <DialogContent className="sm:max-w-md">
-                    <DialogHeader>
-                      <DialogTitle>About Zeny</DialogTitle>
-                      <DialogDescription>
-                        Zeny is a minimalist web application that helps you manage your personal finances calmly and simply through an intuitive chatbot.
-                      </DialogDescription>
-                    </DialogHeader>
-                    <div className="grid gap-4 py-4">
-                      <div className="flex flex-col gap-2">
-                        <h3 className="font-medium">Key Features:</h3>
-                        <ul className="list-disc list-inside text-sm text-muted-foreground ml-2 space-y-1">
-                          <li>Simple expense tracking</li>
-                          <li>Personalized financial insights</li>
-                          <li>Budget recommendations</li>
-                          <li>Natural language finance management</li>
-                        </ul>
-                      </div>
-                    </div>
-                    <div className="flex justify-end">
-                      <Button type="button">
-                        Connect Now
-                      </Button>
-                    </div>
-                  </DialogContent>
-                </Dialog>
+                <Button size="sm" variant="outline" onClick={() => {
+                  toast({
+                    title: "About Zeny",
+                    description: "Zeny is a minimalist finance chatbot that helps you manage your personal finances.",
+                  });
+                }}>
+                  <MessageCircle className="mr-2 h-4 w-4" />
+                  Learn More
+                </Button>
               </div>
               
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
-                {connectedAppsList.slice(0, 4).map(app => (
+                {connectedApps.map(app => (
                   <Card key={app.id} className={`${app.connected ? "border-primary/50" : ""} hover:shadow-md transition-shadow`}>
                     <CardContent className="p-4 flex flex-col items-center text-center">
                       <div className="my-3">
