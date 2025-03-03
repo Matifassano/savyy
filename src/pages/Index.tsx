@@ -136,18 +136,26 @@ const Index = () => {
             <Button
               size="lg"
               className="mt-6 sm:mt-8"
-              onClick={() =>
-                toast({
-                  title: "Coming Soon!",
-                  description: "Sign up to get early access.",
-                })
-              }
+              asChild
             >
-              Get Started
+              <Link to="/login">Get Started</Link>
             </Button>
           </motion.div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 sm:gap-8 mt-16 sm:mt-24">
+          {/* Features Section Title */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+            className="text-center mt-16 mb-8"
+          >
+            <h2 className="text-3xl font-bold mb-4">Key Features</h2>
+            <p className="text-muted-foreground max-w-2xl mx-auto">
+              Discover how PromoAlert helps you make the most of your banking experience with these powerful features.
+            </p>
+          </motion.div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 sm:gap-8 mt-8">
             {features.map((feature, index) => (
               <motion.div
                 key={index}
