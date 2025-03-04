@@ -6,13 +6,31 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
 import { useUser } from "@/contexts/UserContext";
 import { useToast } from "@/hooks/use-toast";
-import { CreditCard, Shield, BadgeCheck } from "lucide-react";
+import { CreditCard, Shield, BadgeCheck, Moon, Sun } from "lucide-react";
 
 const Login = () => {
   const navigate = useNavigate();
   const { user, isLoading } = useUser();
   const { toast } = useToast();
   const [isAuthenticating, setIsAuthenticating] = useState(false);
+  const [theme, setTheme] = useState<"light" | "dark">("light");
+
+  // Load theme from localStorage on component mount
+  useEffect(() => {
+    const savedTheme = localStorage.getItem("theme") as "light" | "dark" | null;
+    if (savedTheme) {
+      setTheme(savedTheme);
+      document.documentElement.classList.toggle("dark", savedTheme === "dark");
+    }
+  }, []);
+
+  // Toggle theme function
+  const toggleTheme = () => {
+    const newTheme = theme === "light" ? "dark" : "light";
+    setTheme(newTheme);
+    localStorage.setItem("theme", newTheme);
+    document.documentElement.classList.toggle("dark", newTheme === "dark");
+  };
 
   useEffect(() => {
     if (user && !isLoading) {
@@ -23,10 +41,15 @@ const Login = () => {
   const handleGoogleSignIn = async () => {
     try {
       setIsAuthenticating(true);
+      
+      // Use the current hostname dynamically for the redirectTo URL
+      const redirectUrl = `${window.location.origin}/dashboard`;
+      console.log("Redirect URL:", redirectUrl);
+      
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: `${window.location.origin}/dashboard`
+          redirectTo: redirectUrl
         }
       });
 
@@ -56,6 +79,13 @@ const Login = () => {
       <header className="container mx-auto py-6 px-4">
         <nav className="flex justify-between items-center">
           <Link to="/" className="text-2xl font-bold text-primary">Savy</Link>
+          <Button variant="ghost" size="icon" onClick={toggleTheme}>
+            {theme === "light" ? (
+              <Moon className="h-5 w-5" />
+            ) : (
+              <Sun className="h-5 w-5" />
+            )}
+          </Button>
         </nav>
       </header>
 

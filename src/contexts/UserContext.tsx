@@ -29,6 +29,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
           throw error;
         }
         
+        console.log("Initial session data:", data.session ? "Session exists" : "No session");
         setSession(data.session);
         setUser(data.session?.user ?? null);
       } catch (error) {
@@ -49,6 +50,9 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (event, currentSession) => {
         console.log("Auth state change:", event);
+        if (currentSession) {
+          console.log("User authenticated:", currentSession.user.email);
+        }
         setSession(currentSession);
         setUser(currentSession?.user ?? null);
         setIsLoading(false);
