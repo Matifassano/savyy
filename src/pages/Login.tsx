@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -15,7 +14,6 @@ const Login = () => {
   const [isAuthenticating, setIsAuthenticating] = useState(false);
   const [theme, setTheme] = useState<"light" | "dark">("light");
 
-  // Load theme from localStorage on component mount
   useEffect(() => {
     const savedTheme = localStorage.getItem("theme") as "light" | "dark" | null;
     if (savedTheme) {
@@ -24,7 +22,6 @@ const Login = () => {
     }
   }, []);
 
-  // Toggle theme function
   const toggleTheme = () => {
     const newTheme = theme === "light" ? "dark" : "light";
     setTheme(newTheme);
@@ -42,14 +39,16 @@ const Login = () => {
     try {
       setIsAuthenticating(true);
       
-      // Use the current hostname dynamically for the redirectTo URL
       const redirectUrl = `${window.location.origin}/dashboard`;
       console.log("Redirect URL:", redirectUrl);
       
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: redirectUrl
+          redirectTo: redirectUrl,
+          queryParams: {
+            prompt: 'select_account'
+          }
         }
       });
 
