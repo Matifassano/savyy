@@ -26,10 +26,16 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
         const { data, error } = await supabase.auth.getSession();
         
         if (error) {
+          console.error("Error getting initial session:", error);
           throw error;
         }
         
         console.log("Initial session data:", data.session ? "Session exists" : "No session");
+        if (data.session) {
+          console.log("User email:", data.session.user.email);
+          console.log("Session expires at:", new Date(data.session.expires_at! * 1000).toLocaleString());
+        }
+        
         setSession(data.session);
         setUser(data.session?.user ?? null);
       } catch (error) {
@@ -50,9 +56,21 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (event, currentSession) => {
         console.log("Auth state change:", event);
-        if (currentSession) {
-          console.log("User authenticated:", currentSession.user.email);
+        
+        if (event === 'SIGNED_IN') {
+          console.log("User signed in:", currentSession?.user.email);
+          toast({
+            title: "Signed in",
+            description: `Welcome ${currentSession?.user.email}!`,
+          });
+        } else if (event === 'SIGNED_OUT') {
+          console.log("User signed out");
+        } else if (event === 'TOKEN_REFRESHED') {
+          console.log("Token refreshed");
+        } else if (event === 'USER_UPDATED') {
+          console.log("User updated");
         }
+        
         setSession(currentSession);
         setUser(currentSession?.user ?? null);
         setIsLoading(false);

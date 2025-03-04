@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -39,23 +40,29 @@ const Login = () => {
     try {
       setIsAuthenticating(true);
       
-      const redirectUrl = `${window.location.origin}/dashboard`;
-      console.log("Redirect URL:", redirectUrl);
+      // Get the full origin for the redirect URL
+      const currentOrigin = window.location.origin;
+      const redirectUrl = `${currentOrigin}/dashboard`;
+      
+      console.log("Attempting Google sign in with redirect URL:", redirectUrl);
       
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
           redirectTo: redirectUrl,
           queryParams: {
-            prompt: 'select_account'
+            access_type: 'offline', // Request a refresh token
+            prompt: 'select_account' // Force account selection even if the user is already signed in
           }
         }
       });
 
       if (error) {
+        console.error("Google sign in error:", error);
         throw error;
       }
     } catch (error: any) {
+      console.error("Authentication error:", error);
       toast({
         title: "Authentication Error",
         description: error.message || "Failed to sign in with Google",

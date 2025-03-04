@@ -6,9 +6,6 @@ import type { Database } from './types';
 const SUPABASE_URL = "https://sjblngjahqcjqymufnho.supabase.co";
 const SUPABASE_PUBLISHABLE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNqYmxuZ2phaHFjanF5bXVmbmhvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDA3Nzk0NjYsImV4cCI6MjA1NjM1NTQ2Nn0.LTyioy9_JXsedFzajqJQXiDo5v9d0bqsppVL-Wazaw4";
 
-// Define site URL for handling callbacks
-const siteUrl = typeof window !== 'undefined' ? window.location.origin : '';
-
 export const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
   auth: {
     autoRefreshToken: true,
