@@ -36,7 +36,10 @@ const NotFound = () => {
   return (
     <div className="min-h-screen flex flex-col bg-background">
       <div className="container mx-auto py-6">
-        <div className="flex justify-end">
+        <div className="flex justify-between items-center">
+          <a href="/" className="text-2xl font-bold text-primary">
+            Savy
+          </a>
           <Button variant="ghost" size="icon" onClick={toggleTheme}>
             {theme === "light" ? (
               <Moon className="h-5 w-5" />

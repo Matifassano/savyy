@@ -7,10 +7,12 @@ import { BadgeCheck, CreditCard, Bell, Moon, Sun, Check } from "lucide-react";
 import { Footer } from "./Login";
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { useUser } from "@/contexts/UserContext";
 
 const Index = () => {
   const { toast } = useToast();
   const [theme, setTheme] = useState<"light" | "dark">("light");
+  const { user } = useUser();
 
   // Load theme from localStorage on component mount
   useEffect(() => {
@@ -99,7 +101,7 @@ const Index = () => {
     <div className="min-h-screen flex flex-col">
       <header className="container mx-auto py-4 px-4 sm:py-6 sm:px-6">
         <nav className="flex justify-between items-center">
-          <div className="text-xl sm:text-2xl font-bold text-primary">PromoAlert</div>
+          <div className="text-xl sm:text-2xl font-bold text-primary">Savy</div>
           <div className="flex items-center gap-2 sm:gap-4">
             <Button variant="ghost" size="icon" onClick={toggleTheme}>
               {theme === "light" ? (
@@ -108,12 +110,15 @@ const Index = () => {
                 <Sun className="h-4 w-4 sm:h-5 sm:w-5" />
               )}
             </Button>
-            <Button variant="outline" size="sm" className="text-xs sm:text-sm" asChild>
-              <Link to="/login">Log in</Link>
-            </Button>
-            <Button size="sm" className="text-xs sm:text-sm" asChild>
-              <Link to="/signup">Sign up</Link>
-            </Button>
+            {user ? (
+              <Button size="sm" className="text-xs sm:text-sm" asChild>
+                <Link to="/dashboard">Dashboard</Link>
+              </Button>
+            ) : (
+              <Button size="sm" className="text-xs sm:text-sm" asChild>
+                <Link to="/login">Sign in with Google</Link>
+              </Button>
+            )}
           </div>
         </nav>
       </header>
@@ -142,7 +147,7 @@ const Index = () => {
             </Button>
           </motion.div>
 
-          {/* Features Section Title */}
+          {/* Features Section */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -151,7 +156,7 @@ const Index = () => {
           >
             <h2 className="text-3xl font-bold mb-4">Key Features</h2>
             <p className="text-muted-foreground max-w-2xl mx-auto">
-              Discover how PromoAlert helps you make the most of your banking experience with these powerful features.
+              Discover how Savy helps you make the most of your banking experience with these powerful features.
             </p>
           </motion.div>
 
