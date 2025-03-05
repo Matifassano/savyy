@@ -1,4 +1,3 @@
-
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -229,10 +228,10 @@ const Dashboard = () => {
     }
     
     import("@/components/my-cards").then((module) => {
-      // Access the initialCards from the module if available
-      const cards = Array.isArray(module.default) ? module.default : [];
-      const banks = getAvailableBanksFromCards(cards);
+      const banks = getAvailableBanksFromCards([]);
       setAvailableBanks(banks);
+    }).catch(error => {
+      console.error("Error importing my-cards:", error);
     });
     
     if (user) {
