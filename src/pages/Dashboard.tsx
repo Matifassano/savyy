@@ -1,7 +1,8 @@
+
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Bell, CreditCard, Gift, Plus, Tag, Filter, Moon, Sun, ExternalLink, Trash2, Wallet, Link2, Smartphone, Wifi, Bot, MessageCircle } from "lucide-react";
+import { Bell, CreditCard, Gift, Plus, Tag, Filter, Moon, Sun, ExternalLink, Trash2, Wallet, Link2, Smartphone, Wifi, Bot, MessageCircle, LogOut } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Footer } from "./Login";
 import { useState, useEffect, useRef } from "react";
@@ -200,7 +201,7 @@ type FilterType = {
 };
 
 const Dashboard = () => {
-  const { user } = useUser();
+  const { user, signOut } = useUser();
   const [filters, setFilters] = useState<FilterType>({
     category: "All",
     bank: "All Banks",
@@ -227,8 +228,10 @@ const Dashboard = () => {
       document.documentElement.classList.toggle("dark", savedTheme === "dark");
     }
     
-    import("@/components/my-cards").then(({ initialCards }) => {
-      const banks = getAvailableBanksFromCards(initialCards);
+    import("@/components/my-cards").then((module) => {
+      // Access the initialCards from the module if available
+      const cards = Array.isArray(module.default) ? module.default : [];
+      const banks = getAvailableBanksFromCards(cards);
       setAvailableBanks(banks);
     });
     
@@ -412,6 +415,14 @@ const Dashboard = () => {
               </Link>
             </div>
             <div className="flex items-center space-x-4">
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={signOut} 
+                className="flex items-center gap-2"
+              >
+                <LogOut className="h-4 w-4" /> Logout
+              </Button>
               <Button variant="ghost" size="icon" onClick={toggleTheme} className="h-9 w-9">
                 {theme === "light" ? <Moon className="h-5 w-5" /> : <Sun className="h-5 w-5" />}
               </Button>
