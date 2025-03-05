@@ -12,32 +12,41 @@ export type Database = {
       cards: {
         Row: {
           bank: string | null
+          card_name: string | null
           card_type: string | null
+          color: string | null
           created_at: string
           expiration_date: string | null
           id: number
           last_digits: number | null
           payment_network: string | null
+          status: string | null
           user: string | null
         }
         Insert: {
           bank?: string | null
+          card_name?: string | null
           card_type?: string | null
+          color?: string | null
           created_at?: string
           expiration_date?: string | null
           id?: number
           last_digits?: number | null
           payment_network?: string | null
+          status?: string | null
           user?: string | null
         }
         Update: {
           bank?: string | null
+          card_name?: string | null
           card_type?: string | null
+          color?: string | null
           created_at?: string
           expiration_date?: string | null
           id?: number
           last_digits?: number | null
           payment_network?: string | null
+          status?: string | null
           user?: string | null
         }
         Relationships: [
@@ -79,6 +88,8 @@ export type Database = {
       }
       promotions: {
         Row: {
+          bank: string | null
+          category: string | null
           description: string | null
           expiration_date: string | null
           id: number
@@ -86,6 +97,8 @@ export type Database = {
           title: string | null
         }
         Insert: {
+          bank?: string | null
+          category?: string | null
           description?: string | null
           expiration_date?: string | null
           id?: number
@@ -93,6 +106,8 @@ export type Database = {
           title?: string | null
         }
         Update: {
+          bank?: string | null
+          category?: string | null
           description?: string | null
           expiration_date?: string | null
           id?: number

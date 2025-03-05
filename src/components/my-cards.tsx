@@ -9,78 +9,117 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
-import { promotions, getPromotionsByBank } from "../pages/Dashboard";
+import { supabase } from "@/integrations/supabase/client";
+import { useUser } from "@/contexts/UserContext";
 
-export const initialCards = [
-  {
-    id: 1,
-    bank: "Chase",
-    name: "Sapphire Preferred",
-    type: "Visa Signature",
-    number: "**** **** **** 4582",
-    expiry: "05/26",
-    status: "active",
-    color: "bg-gradient-to-r from-blue-600 to-blue-800"
-  },
-  {
-    id: 2,
-    bank: "American Express",
-    name: "Gold Card",
-    type: "American Express",
-    number: "**** **** **** 3726",
-    expiry: "09/25",
-    status: "active",
-    color: "bg-gradient-to-r from-amber-500 to-amber-700"
-  },
-  {
-    id: 3,
-    bank: "Capital One",
-    name: "Venture X",
-    type: "Visa Infinite",
-    number: "**** **** **** 1029",
-    expiry: "11/27",
-    status: "inactive",
-    color: "bg-gradient-to-r from-slate-600 to-slate-900"
-  },
-  {
-    id: 4,
-    bank: "Citibank",
-    name: "Double Cash",
-    type: "Mastercard",
-    number: "**** **** **** 7643",
-    expiry: "03/26",
-    status: "active",
-    color: "bg-gradient-to-r from-cyan-600 to-cyan-800"
-  }
-];
+// Type for card from Supabase
+interface CardType {
+  id: number;
+  bank: string;
+  card_name: string;
+  card_type: string;
+  last_digits: number;
+  expiration_date: string;
+  status: string;
+  color: string;
+  user: string;
+}
+
+// Type for promotion from Supabase
+interface Promotion {
+  id: number;
+  title: string;
+  description: string;
+  bank: string;
+  category: string;
+  expiration_date: string;
+  link_promotion: string;
+}
 
 interface MyCardsProps {
-  onCardsChange?: (cards: typeof initialCards) => void;
+  onCardsChange?: (cards: CardType[]) => void;
 }
 
 export const MyCards = ({ onCardsChange }: MyCardsProps) => {
+  const { user } = useUser();
   const [expandedCard, setExpandedCard] = useState<number | null>(null);
-  const [cards, setCards] = useState(initialCards);
+  const [cards, setCards] = useState<CardType[]>([]);
   const [newCard, setNewCard] = useState({
     bank: "",
-    name: "",
-    type: "",
-    number: "",
-    expiry: "",
+    card_name: "",
+    card_type: "",
+    last_digits: "",
+    expiration_date: "",
     status: "active"
   });
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isManageDialogOpen, setIsManageDialogOpen] = useState(false);
-  const [selectedCard, setSelectedCard] = useState<typeof initialCards[0] | null>(null);
-  const [editedCard, setEditedCard] = useState<typeof initialCards[0] | null>(null);
+  const [selectedCard, setSelectedCard] = useState<CardType | null>(null);
+  const [editedCard, setEditedCard] = useState<CardType | null>(null);
   const [isOffersDialogOpen, setIsOffersDialogOpen] = useState(false);
-  const [cardOffers, setCardOffers] = useState<typeof promotions>([]);
+  const [cardOffers, setCardOffers] = useState<Promotion[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
+  // Fetch cards from Supabase when component mounts
   useEffect(() => {
-    if (onCardsChange) {
-      onCardsChange(cards);
+    if (user) {
+      fetchCards();
     }
-  }, [cards, onCardsChange]);
+  }, [user]);
+
+  const fetchCards = async () => {
+    if (!user) return;
+    
+    setIsLoading(true);
+    try {
+      const { data, error } = await supabase
+        .from('cards')
+        .select('*')
+        .eq('user', user.id);
+      
+      if (error) {
+        throw error;
+      }
+      
+      if (data) {
+        // Format data to match component's expected structure
+        const formattedCards = data.map(card => ({
+          ...card,
+          id: card.id,
+          bank: card.bank || "",
+          card_name: card.card_name || "",
+          card_type: card.card_type || "",
+          expiration_date: card.expiration_date || "",
+          last_digits: card.last_digits || 0,
+          status: card.status || "active",
+          color: card.color || generateRandomColor()
+        }));
+        
+        setCards(formattedCards);
+        
+        if (onCardsChange) {
+          onCardsChange(formattedCards);
+        }
+      }
+    } catch (error) {
+      console.error("Error fetching cards:", error);
+      toast.error("Failed to load cards");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const generateRandomColor = () => {
+    const colors = [
+      "bg-gradient-to-r from-blue-600 to-blue-800",
+      "bg-gradient-to-r from-green-600 to-green-800",
+      "bg-gradient-to-r from-purple-600 to-purple-800",
+      "bg-gradient-to-r from-red-600 to-red-800",
+      "bg-gradient-to-r from-amber-500 to-amber-700",
+      "bg-gradient-to-r from-cyan-600 to-cyan-800"
+    ];
+    return colors[Math.floor(Math.random() * colors.length)];
+  };
 
   const toggleCardExpand = (cardId: number) => {
     setExpandedCard(expandedCard === cardId ? null : cardId);
@@ -113,103 +152,200 @@ export const MyCards = ({ onCardsChange }: MyCardsProps) => {
     }));
   };
 
-  const handleAddCard = () => {
-    const colors = [
-      "bg-gradient-to-r from-blue-600 to-blue-800",
-      "bg-gradient-to-r from-green-600 to-green-800",
-      "bg-gradient-to-r from-purple-600 to-purple-800",
-      "bg-gradient-to-r from-red-600 to-red-800",
-      "bg-gradient-to-r from-amber-500 to-amber-700",
-      "bg-gradient-to-r from-cyan-600 to-cyan-800"
-    ];
-    const randomColor = colors[Math.floor(Math.random() * colors.length)];
-    
-    let formattedNumber = newCard.number;
-    if (formattedNumber.length >= 4) {
-      formattedNumber = `**** **** **** ${formattedNumber.slice(-4)}`;
+  const handleAddCard = async () => {
+    if (!user) {
+      toast.error("You must be logged in to add a card");
+      return;
     }
-
-    const newCardWithId = {
-      ...newCard,
-      id: cards.length + 1,
-      number: formattedNumber,
-      color: randomColor
+    
+    const randomColor = generateRandomColor();
+    
+    const cardData = {
+      bank: newCard.bank,
+      card_name: newCard.card_name,
+      card_type: newCard.card_type,
+      last_digits: parseInt(newCard.last_digits) || null,
+      expiration_date: newCard.expiration_date,
+      status: newCard.status,
+      color: randomColor,
+      user: user.id
     };
     
-    const updatedCards = [...cards, newCardWithId];
-    setCards(updatedCards);
-    
-    if (onCardsChange) {
-      onCardsChange(updatedCards);
+    try {
+      const { data, error } = await supabase
+        .from('cards')
+        .insert(cardData)
+        .select();
+      
+      if (error) {
+        throw error;
+      }
+      
+      if (data && data.length > 0) {
+        const newCardWithId = data[0] as CardType;
+        
+        const updatedCards = [...cards, newCardWithId];
+        setCards(updatedCards);
+        
+        if (onCardsChange) {
+          onCardsChange(updatedCards);
+        }
+        
+        setNewCard({
+          bank: "",
+          card_name: "",
+          card_type: "",
+          last_digits: "",
+          expiration_date: "",
+          status: "active"
+        });
+        
+        setIsDialogOpen(false);
+        
+        toast.success("Card added successfully", {
+          description: `${newCardWithId.card_name} has been added to your account.`
+        });
+      }
+    } catch (error) {
+      console.error("Error adding card:", error);
+      toast.error("Failed to add card");
     }
-    
-    setNewCard({
-      bank: "",
-      name: "",
-      type: "",
-      number: "",
-      expiry: "",
-      status: "active"
-    });
-    
-    setIsDialogOpen(false);
-    
-    toast.success("Card added successfully", {
-      description: `${newCardWithId.name} has been added to your account.`
-    });
   };
 
-  const openManageDialog = (e: React.MouseEvent, card: typeof initialCards[0]) => {
+  const openManageDialog = (e: React.MouseEvent, card: CardType) => {
     e.stopPropagation();
     setSelectedCard(card);
     setEditedCard({...card});
     setIsManageDialogOpen(true);
   };
 
-  const handleSaveChanges = () => {
-    if (!editedCard) return;
+  const handleSaveChanges = async () => {
+    if (!editedCard || !user) return;
 
-    const updatedCards = cards.map(card => 
-      card.id === editedCard.id ? editedCard : card
-    );
-    
-    setCards(updatedCards);
-    
-    if (onCardsChange) {
-      onCardsChange(updatedCards);
+    try {
+      const { error } = await supabase
+        .from('cards')
+        .update({
+          bank: editedCard.bank,
+          card_name: editedCard.card_name,
+          card_type: editedCard.card_type,
+          expiration_date: editedCard.expiration_date,
+          status: editedCard.status,
+        })
+        .eq('id', editedCard.id)
+        .eq('user', user.id);
+      
+      if (error) {
+        throw error;
+      }
+      
+      const updatedCards = cards.map(card => 
+        card.id === editedCard.id ? editedCard : card
+      );
+      
+      setCards(updatedCards);
+      
+      if (onCardsChange) {
+        onCardsChange(updatedCards);
+      }
+      
+      setIsManageDialogOpen(false);
+      
+      toast.success("Card updated successfully", {
+        description: `${editedCard.card_name} has been updated.`
+      });
+    } catch (error) {
+      console.error("Error updating card:", error);
+      toast.error("Failed to update card");
     }
-    
-    setIsManageDialogOpen(false);
-    
-    toast.success("Card updated successfully", {
-      description: `${editedCard.name} has been updated.`
-    });
   };
 
-  const handleDeleteCard = () => {
-    if (!selectedCard) return;
+  const handleDeleteCard = async () => {
+    if (!selectedCard || !user) return;
     
-    const updatedCards = cards.filter(card => card.id !== selectedCard.id);
-    setCards(updatedCards);
-    
-    if (onCardsChange) {
-      onCardsChange(updatedCards);
+    try {
+      const { error } = await supabase
+        .from('cards')
+        .delete()
+        .eq('id', selectedCard.id)
+        .eq('user', user.id);
+      
+      if (error) {
+        throw error;
+      }
+      
+      const updatedCards = cards.filter(card => card.id !== selectedCard.id);
+      setCards(updatedCards);
+      
+      if (onCardsChange) {
+        onCardsChange(updatedCards);
+      }
+      
+      setIsManageDialogOpen(false);
+      
+      toast.success("Card removed", {
+        description: `${selectedCard.card_name} has been removed from your account.`
+      });
+    } catch (error) {
+      console.error("Error deleting card:", error);
+      toast.error("Failed to delete card");
     }
-    
-    setIsManageDialogOpen(false);
-    
-    toast.success("Card removed", {
-      description: `${selectedCard.name} has been removed from your account.`
-    });
   };
 
-  const openOffersDialog = (e: React.MouseEvent, card: typeof initialCards[0]) => {
+  const openOffersDialog = async (e: React.MouseEvent, card: CardType) => {
     e.stopPropagation();
-    const cardPromotions = getPromotionsByBank(card.bank);
-    setCardOffers(cardPromotions);
     setSelectedCard(card);
-    setIsOffersDialogOpen(true);
+    
+    try {
+      const { data, error } = await supabase
+        .from('promotions')
+        .select('*')
+        .eq('bank', card.bank);
+      
+      if (error) {
+        throw error;
+      }
+      
+      setCardOffers(data || []);
+      setIsOffersDialogOpen(true);
+    } catch (error) {
+      console.error("Error fetching promotions:", error);
+      toast.error("Failed to load promotions");
+    }
   };
+
+  const formatCardNumber = (digits: number | null) => {
+    if (!digits) return "**** **** **** ****";
+    return `**** **** **** ${digits.toString().padStart(4, '0')}`;
+  };
+
+  const formatExpiryDate = (date: string | null) => {
+    if (!date) return "MM/YY";
+    
+    // Handle different date formats
+    if (date.includes('-')) {
+      // If it's in YYYY-MM-DD format from database
+      const parts = date.split('-');
+      if (parts.length >= 2) {
+        const month = parts[1];
+        const year = parts[0].slice(-2);
+        return `${month}/${year}`;
+      }
+    }
+    
+    return date; // Return as is if already formatted
+  };
+
+  if (isLoading && cards.length === 0) {
+    return (
+      <div className="flex justify-center items-center p-12">
+        <div className="text-center">
+          <CreditCard className="h-12 w-12 mx-auto mb-4 text-muted-foreground animate-pulse" />
+          <p className="text-muted-foreground">Loading your cards...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -218,7 +354,7 @@ export const MyCards = ({ onCardsChange }: MyCardsProps) => {
           key={card.id}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4, delay: card.id * 0.1 }}
+          transition={{ duration: 0.4, delay: 0.1 }}
         >
           <Card 
             className={`cursor-pointer overflow-hidden ${
@@ -236,20 +372,20 @@ export const MyCards = ({ onCardsChange }: MyCardsProps) => {
               </div>
               <div className="mb-2">
                 <p className="text-xs text-white/70">{card.bank}</p>
-                <h3 className="text-xl font-semibold">{card.name}</h3>
+                <h3 className="text-xl font-semibold">{card.card_name}</h3>
               </div>
               <div className="mb-6">
                 <CreditCard className="h-8 w-8 mb-1" />
-                <p className="text-base font-medium tracking-widest">{card.number}</p>
+                <p className="text-base font-medium tracking-widest">{formatCardNumber(card.last_digits)}</p>
               </div>
               <div className="flex justify-between text-xs">
                 <div>
                   <p className="text-white/70">Expires</p>
-                  <p>{card.expiry}</p>
+                  <p>{formatExpiryDate(card.expiration_date)}</p>
                 </div>
                 <div>
                   <p className="text-white/70">Type</p>
-                  <p>{card.type}</p>
+                  <p>{card.card_type}</p>
                 </div>
               </div>
             </div>
@@ -273,7 +409,7 @@ export const MyCards = ({ onCardsChange }: MyCardsProps) => {
                     </div>
                     <div className="grid grid-cols-2">
                       <p className="text-sm text-muted-foreground">Card Type</p>
-                      <p className="text-sm font-medium">{card.type}</p>
+                      <p className="text-sm font-medium">{card.card_type}</p>
                     </div>
                   </div>
                 </CardContent>
@@ -342,39 +478,39 @@ export const MyCards = ({ onCardsChange }: MyCardsProps) => {
               />
             </div>
             <div className="grid grid-cols-4 items-center gap-4">
-              <label htmlFor="name" className="text-right text-sm font-medium">
+              <label htmlFor="card_name" className="text-right text-sm font-medium">
                 Card Name
               </label>
               <Input
-                id="name"
-                name="name"
-                value={newCard.name}
+                id="card_name"
+                name="card_name"
+                value={newCard.card_name}
                 onChange={handleInputChange}
                 className="col-span-3"
                 placeholder="Sapphire Preferred, Gold Card, etc."
               />
             </div>
             <div className="grid grid-cols-4 items-center gap-4">
-              <label htmlFor="type" className="text-right text-sm font-medium">
+              <label htmlFor="card_type" className="text-right text-sm font-medium">
                 Card Type
               </label>
               <Input
-                id="type"
-                name="type"
-                value={newCard.type}
+                id="card_type"
+                name="card_type"
+                value={newCard.card_type}
                 onChange={handleInputChange}
                 className="col-span-3"
                 placeholder="Visa, Mastercard, Amex, etc."
               />
             </div>
             <div className="grid grid-cols-4 items-center gap-4">
-              <label htmlFor="number" className="text-right text-sm font-medium">
+              <label htmlFor="last_digits" className="text-right text-sm font-medium">
                 Last 4 Digits
               </label>
               <Input
-                id="number"
-                name="number"
-                value={newCard.number}
+                id="last_digits"
+                name="last_digits"
+                value={newCard.last_digits}
                 onChange={handleInputChange}
                 className="col-span-3"
                 placeholder="1234"
@@ -382,13 +518,13 @@ export const MyCards = ({ onCardsChange }: MyCardsProps) => {
               />
             </div>
             <div className="grid grid-cols-4 items-center gap-4">
-              <label htmlFor="expiry" className="text-right text-sm font-medium">
+              <label htmlFor="expiration_date" className="text-right text-sm font-medium">
                 Expiry Date
               </label>
               <Input
-                id="expiry"
-                name="expiry"
-                value={newCard.expiry}
+                id="expiration_date"
+                name="expiration_date"
+                value={newCard.expiration_date}
                 onChange={handleInputChange}
                 className="col-span-3"
                 placeholder="MM/YY"
@@ -422,31 +558,31 @@ export const MyCards = ({ onCardsChange }: MyCardsProps) => {
                 />
               </div>
               <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="edit-name" className="text-right">Card Name</Label>
+                <Label htmlFor="edit-card_name" className="text-right">Card Name</Label>
                 <Input
-                  id="edit-name"
-                  name="name"
-                  value={editedCard.name}
+                  id="edit-card_name"
+                  name="card_name"
+                  value={editedCard.card_name}
                   onChange={handleEditInputChange}
                   className="col-span-3"
                 />
               </div>
               <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="edit-type" className="text-right">Card Type</Label>
+                <Label htmlFor="edit-card_type" className="text-right">Card Type</Label>
                 <Input
-                  id="edit-type"
-                  name="type"
-                  value={editedCard.type}
+                  id="edit-card_type"
+                  name="card_type"
+                  value={editedCard.card_type}
                   onChange={handleEditInputChange}
                   className="col-span-3"
                 />
               </div>
               <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="edit-expiry" className="text-right">Expiry Date</Label>
+                <Label htmlFor="edit-expiration_date" className="text-right">Expiry Date</Label>
                 <Input
-                  id="edit-expiry"
-                  name="expiry"
-                  value={editedCard.expiry}
+                  id="edit-expiration_date"
+                  name="expiration_date"
+                  value={formatExpiryDate(editedCard.expiration_date)}
                   onChange={handleEditInputChange}
                   className="col-span-3"
                 />
@@ -503,7 +639,7 @@ export const MyCards = ({ onCardsChange }: MyCardsProps) => {
             <DialogTitle>
               {selectedCard?.bank} Offers
               {selectedCard && <span className="ml-2 text-sm font-normal text-muted-foreground">
-                ({selectedCard.name})
+                ({selectedCard.card_name})
               </span>}
             </DialogTitle>
             <DialogDescription>
@@ -521,7 +657,7 @@ export const MyCards = ({ onCardsChange }: MyCardsProps) => {
                         <div>
                           <CardTitle className="text-base">{offer.title}</CardTitle>
                           <CardDescription className="text-xs">
-                            Valid until {new Date(offer.validUntil).toLocaleDateString()}
+                            Valid until {new Date(offer.expiration_date).toLocaleDateString()}
                           </CardDescription>
                         </div>
                         <div className="bg-primary/10 text-primary text-xs px-2 py-1 rounded-full">
@@ -533,16 +669,19 @@ export const MyCards = ({ onCardsChange }: MyCardsProps) => {
                       <p className="text-sm text-muted-foreground">
                         {offer.description}
                       </p>
-                      <div className="flex justify-end mt-3">
-                        <Button 
-                          size="sm" 
-                          variant="outline" 
-                          className="text-xs flex items-center gap-1.5"
-                        >
-                          <ExternalLink className="h-3 w-3" />
-                          Link to Promotion
-                        </Button>
-                      </div>
+                      {offer.link_promotion && (
+                        <div className="flex justify-end mt-3">
+                          <Button 
+                            size="sm" 
+                            variant="outline" 
+                            className="text-xs flex items-center gap-1.5"
+                            onClick={() => window.open(offer.link_promotion, '_blank')}
+                          >
+                            <ExternalLink className="h-3 w-3" />
+                            Link to Promotion
+                          </Button>
+                        </div>
+                      )}
                     </CardContent>
                   </Card>
                 ))}
