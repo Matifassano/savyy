@@ -1,4 +1,3 @@
-
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
@@ -14,7 +13,6 @@ const Index = () => {
   const [theme, setTheme] = useState<"light" | "dark">("light");
   const { user } = useUser();
 
-  // Load theme from localStorage on component mount
   useEffect(() => {
     const savedTheme = localStorage.getItem("theme") as "light" | "dark" | null;
     if (savedTheme) {
@@ -23,7 +21,6 @@ const Index = () => {
     }
   }, []);
 
-  // Toggle theme function
   const toggleTheme = () => {
     const newTheme = theme === "light" ? "dark" : "light";
     setTheme(newTheme);
@@ -57,8 +54,8 @@ const Index = () => {
       features: [
         "Add up to 2 cards",
         "Basic notifications",
-        "Standard support",
-        "Web access only"
+        "Email support",
+        "Web access"
       ],
       cta: "Get Started",
       popular: false
@@ -71,8 +68,8 @@ const Index = () => {
       features: [
         "Add up to 5 cards",
         "Priority notifications",
-        "Email & chat support",
-        "Mobile app access",
+        "Priority email support",
+        "Web access",
         "Personalized offers"
       ],
       cta: "Go Premium",
@@ -86,10 +83,10 @@ const Index = () => {
       features: [
         "Unlimited cards",
         "Instant notifications",
-        "24/7 priority support",
-        "Mobile app access",
+        "VIP email support",
+        "Web access",
         "Personalized offers",
-        "Family accounts",
+        "Family accounts (up to 5)",
         "Exclusive promotions"
       ],
       cta: "Go Premium+",
@@ -147,7 +144,6 @@ const Index = () => {
             </Button>
           </motion.div>
 
-          {/* Features Section */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -179,7 +175,6 @@ const Index = () => {
           </div>
         </section>
 
-        {/* Pricing Section */}
         <section className="container mx-auto py-16 px-4">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -203,7 +198,7 @@ const Index = () => {
               >
                 <Card className={`h-full flex flex-col ${plan.popular ? 'border-primary shadow-lg' : ''}`}>
                   {plan.popular && (
-                    <div className="bg-primary text-white text-xs font-medium py-1 px-3 rounded-t-md text-center">
+                    <div className="bg-primary text-primary-foreground dark:bg-primary dark:text-primary-foreground text-xs font-bold py-1 px-3 rounded-t-md text-center">
                       MOST POPULAR
                     </div>
                   )}

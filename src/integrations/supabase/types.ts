@@ -9,6 +9,47 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      cards: {
+        Row: {
+          bank: string | null
+          card_type: string | null
+          created_at: string
+          expiration_date: string | null
+          id: number
+          last_digits: number | null
+          payment_network: string | null
+          user: string | null
+        }
+        Insert: {
+          bank?: string | null
+          card_type?: string | null
+          created_at?: string
+          expiration_date?: string | null
+          id?: number
+          last_digits?: number | null
+          payment_network?: string | null
+          user?: string | null
+        }
+        Update: {
+          bank?: string | null
+          card_type?: string | null
+          created_at?: string
+          expiration_date?: string | null
+          id?: number
+          last_digits?: number | null
+          payment_network?: string | null
+          user?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cards_user_fkey"
+            columns: ["user"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -33,6 +74,30 @@ export type Database = {
           full_name?: string | null
           id?: string
           updated_at?: string
+        }
+        Relationships: []
+      }
+      promotions: {
+        Row: {
+          description: string | null
+          expiration_date: string | null
+          id: number
+          link_promotion: string | null
+          title: string | null
+        }
+        Insert: {
+          description?: string | null
+          expiration_date?: string | null
+          id?: number
+          link_promotion?: string | null
+          title?: string | null
+        }
+        Update: {
+          description?: string | null
+          expiration_date?: string | null
+          id?: number
+          link_promotion?: string | null
+          title?: string | null
         }
         Relationships: []
       }
