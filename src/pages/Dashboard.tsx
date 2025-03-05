@@ -184,7 +184,7 @@ const notifications = [
 
 const connectedApps = [
   { 
-    id: 'zeny',
+    id: 'savy',
     name: 'Zeny',
     icon: <Bot className="h-8 w-8 text-blue-500" />,
     connected: false,
@@ -410,7 +410,7 @@ const Dashboard = () => {
           <nav className="flex items-center justify-between px-4">
             <div className="flex items-center space-x-6">
               <Link to="/dashboard" className="text-2xl font-bold text-primary">
-                Zeny
+                Savy
               </Link>
             </div>
             <div className="flex items-center space-x-4">
