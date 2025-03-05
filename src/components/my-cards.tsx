@@ -205,6 +205,9 @@ export const MyCards = ({ onCardsChange }: MyCardsProps) => {
         toast.success("Card added successfully", {
           description: `${newCardWithId.card_name} has been added to your account.`
         });
+        
+        // Create notification for added card
+        await createNotification(`Card Added Successfully`, `Your ${newCardWithId.card_name} has been added to your account.`);
       }
     } catch (error) {
       console.error("Error adding card:", error);
@@ -254,6 +257,9 @@ export const MyCards = ({ onCardsChange }: MyCardsProps) => {
       toast.success("Card updated successfully", {
         description: `${editedCard.card_name} has been updated.`
       });
+      
+      // Create notification for updated card
+      await createNotification(`Card Updated`, `Your ${editedCard.card_name} has been updated.`);
     } catch (error) {
       console.error("Error updating card:", error);
       toast.error("Failed to update card");
@@ -286,9 +292,29 @@ export const MyCards = ({ onCardsChange }: MyCardsProps) => {
       toast.success("Card removed", {
         description: `${selectedCard.card_name} has been removed from your account.`
       });
+      
+      // Create notification for deleted card
+      await createNotification(`Card Removed`, `Your ${selectedCard.card_name} has been removed from your account.`);
     } catch (error) {
       console.error("Error deleting card:", error);
       toast.error("Failed to delete card");
+    }
+  };
+
+  const createNotification = async (title: string, description: string) => {
+    if (!user) return;
+    
+    try {
+      await supabase
+        .from('notifications')
+        .insert({
+          user_id: user.id,
+          title,
+          description,
+          read: false
+        });
+    } catch (error) {
+      console.error("Error creating notification:", error);
     }
   };
 

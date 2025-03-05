@@ -12,14 +12,19 @@ import { MyCards } from "@/components/my-cards";
 import { useToast } from "@/hooks/use-toast";
 import { Separator } from "@/components/ui/separator";
 import { Input } from "@/components/ui/input";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { supabase } from "@/integrations/supabase/client";
+import { useUser } from "@/contexts/UserContext";
+
+// Type definition for notifications
+interface Notification {
+  id: number;
+  title: string;
+  description: string | null;
+  time: string;
+  read: boolean;
+  user_id: string;
+}
 
 const promotions = [{
   id: 1,
@@ -196,6 +201,7 @@ type FilterType = {
 };
 
 const Dashboard = () => {
+  const { user } = useUser();
   const [filters, setFilters] = useState<FilterType>({
     category: "All",
     bank: "All Banks",
@@ -209,10 +215,11 @@ const Dashboard = () => {
   const nextBtnRef = useRef<HTMLButtonElement>(null);
   const [availableBanks, setAvailableBanks] = useState<string[]>([]);
   const [showOnlyCompatible, setShowOnlyCompatible] = useState(true);
-  const [userNotifications, setUserNotifications] = useState(notifications);
+  const [userNotifications, setUserNotifications] = useState<Notification[]>([]);
   const [connectedAppsList, setConnectedAppsList] = useState(connectedApps);
   const [showConnectedApps, setShowConnectedApps] = useState(false);
   const { toast } = useToast();
+  const [isNotificationsLoading, setIsNotificationsLoading] = useState(false);
 
   useEffect(() => {
     const savedTheme = localStorage.getItem("theme") as "light" | "dark" | null;
@@ -225,13 +232,100 @@ const Dashboard = () => {
       const banks = getAvailableBanksFromCards(initialCards);
       setAvailableBanks(banks);
     });
-  }, []);
+    
+    // Fetch notifications when user is available
+    if (user) {
+      fetchNotifications();
+    }
+  }, [user]);
+
+  const fetchNotifications = async () => {
+    if (!user) return;
+    
+    setIsNotificationsLoading(true);
+    try {
+      const { data, error } = await supabase
+        .from('notifications')
+        .select('*')
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: false });
+      
+      if (error) {
+        throw error;
+      }
+      
+      setUserNotifications(data || []);
+    } catch (error) {
+      console.error("Error fetching notifications:", error);
+      toast({
+        title: "Error",
+        description: "Could not load notifications.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsNotificationsLoading(false);
+    }
+  };
 
   const toggleTheme = () => {
     const newTheme = theme === "light" ? "dark" : "light";
     setTheme(newTheme);
     localStorage.setItem("theme", newTheme);
     document.documentElement.classList.toggle("dark", newTheme === "dark");
+  };
+
+  const handleClearAllNotifications = async () => {
+    if (!user || userNotifications.length === 0) return;
+    
+    try {
+      const { error } = await supabase
+        .from('notifications')
+        .delete()
+        .eq('user_id', user.id);
+      
+      if (error) {
+        throw error;
+      }
+      
+      setUserNotifications([]);
+      toast({
+        title: "Success",
+        description: "All notifications have been cleared",
+      });
+    } catch (error) {
+      console.error("Error clearing notifications:", error);
+      toast({
+        title: "Error",
+        description: "Failed to clear notifications",
+        variant: "destructive"
+      });
+    }
+  };
+
+  const markNotificationAsRead = async (notificationId: number) => {
+    if (!user) return;
+    
+    try {
+      const { error } = await supabase
+        .from('notifications')
+        .update({ read: true })
+        .eq('id', notificationId)
+        .eq('user_id', user.id);
+      
+      if (error) {
+        throw error;
+      }
+      
+      setUserNotifications(prev => 
+        prev.map(notification => 
+          notification.id === notificationId 
+            ? { ...notification, read: true } 
+            : notification
+        )
+      );
+    } catch (error) {
+      console.error("Error marking notification as read:", error);
+    }
   };
 
   const filteredPromotions = promotions.filter(promo => {
@@ -294,14 +388,6 @@ const Dashboard = () => {
     }
   };
 
-  const handleClearAllNotifications = () => {
-    setUserNotifications([]);
-    toast({
-      title: "Success",
-      description: "All notifications have been cleared",
-    });
-  };
-
   const toggleAppConnection = (appId: string) => {
     const updatedApps = connectedAppsList.map(app => 
       app.id === appId ? { ...app, connected: !app.connected } : app
@@ -333,8 +419,11 @@ const Dashboard = () => {
               </Button>
               <Sheet>
                 <SheetTrigger asChild>
-                  <Button variant="ghost" size="icon" className="h-9 w-9">
+                  <Button variant="ghost" size="icon" className="h-9 w-9 relative">
                     <Bell className="h-5 w-5" />
+                    {userNotifications.some(n => !n.read) && (
+                      <span className="absolute top-1 right-1 h-2 w-2 rounded-full bg-primary"></span>
+                    )}
                   </Button>
                 </SheetTrigger>
                 <SheetContent>
@@ -345,9 +434,17 @@ const Dashboard = () => {
                     </SheetDescription>
                   </SheetHeader>
                   <div className="mt-6 space-y-4">
-                    {userNotifications.length > 0 ? (
+                    {isNotificationsLoading ? (
+                      <div className="text-center py-4">
+                        <p className="text-muted-foreground">Loading notifications...</p>
+                      </div>
+                    ) : userNotifications.length > 0 ? (
                       userNotifications.map(notification => (
-                        <div key={notification.id} className={`p-4 rounded-lg border ${!notification.read ? "bg-primary/5 border-primary/20" : ""}`}>
+                        <div 
+                          key={notification.id} 
+                          className={`p-4 rounded-lg border ${!notification.read ? "bg-primary/5 border-primary/20" : ""}`}
+                          onClick={() => markNotificationAsRead(notification.id)}
+                        >
                           <div className="flex justify-between items-start">
                             <h4 className={`text-sm font-medium ${!notification.read ? "text-primary" : ""}`}>
                               {notification.title}
@@ -358,7 +455,7 @@ const Dashboard = () => {
                             {notification.description}
                           </p>
                           <p className="text-xs text-muted-foreground mt-2">
-                            {notification.time}
+                            {new Date(notification.time).toLocaleString()}
                           </p>
                         </div>
                       ))
@@ -718,35 +815,3 @@ const Dashboard = () => {
                         >
                           Send
                         </Button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              
-              <div className="md:hidden grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {connectedApps.map(app => (
-                  <Card key={app.id} className={`${app.connected ? "border-primary/50" : ""} hover:shadow-md transition-shadow`}>
-                    <CardContent className="p-4 flex flex-col items-center text-center">
-                      <div className="my-3">
-                        {app.icon}
-                      </div>
-                      <h3 className="font-medium">{app.name}</h3>
-                      <span className={`mt-1 text-xs px-2 py-0.5 rounded-full ${app.connected ? "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300" : "bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-300"}`}>
-                        {app.connected ? "Connected" : "Not Connected"}
-                      </span>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-            </div>
-          </>
-        )}
-      </main>
-
-      <Footer />
-    </div>
-  );
-};
-
-export default Dashboard;
