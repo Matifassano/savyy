@@ -109,11 +109,11 @@ const Index = () => {
             </Button>
             {user ? (
               <Button size="sm" className="text-xs sm:text-sm" asChild>
-                <Link to="/dashboard">Dashboard</Link>
+                <Link to="/dashboard">Go to Dashboard</Link>
               </Button>
             ) : (
               <Button size="sm" className="text-xs sm:text-sm" asChild>
-                <Link to="/login">Sign in with Google</Link>
+                <Link to="/login">Sign in</Link>
               </Button>
             )}
           </div>
