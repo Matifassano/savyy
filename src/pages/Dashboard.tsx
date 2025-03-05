@@ -16,7 +16,6 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { supabase } from "@/integrations/supabase/client";
 import { useUser } from "@/contexts/UserContext";
 
-// Type definition for notifications
 interface Notification {
   id: number;
   title: string;
@@ -233,7 +232,6 @@ const Dashboard = () => {
       setAvailableBanks(banks);
     });
     
-    // Fetch notifications when user is available
     if (user) {
       fetchNotifications();
     }
@@ -683,16 +681,22 @@ const Dashboard = () => {
               {filteredPromotions.length > 0 ? (
                 <Carousel className="w-full">
                   <CarouselContent className="-ml-2 sm:-ml-4">
-                    {filteredPromotions.map(promo => <CarouselItem key={promo.id} className="pl-2 sm:pl-4 basis-full sm:basis-1/2 md:basis-1/3 lg:basis-1/3">
-                        <motion.div initial={{
-                    opacity: 0,
-                    y: 20
-                  }} animate={{
-                    opacity: 1,
-                    y: 0
-                  }} transition={{
-                    duration: 0.4
-                  }} className="h-full">
+                    {filteredPromotions.map(promo => (
+                      <CarouselItem key={promo.id} className="pl-2 sm:pl-4 basis-full sm:basis-1/2 md:basis-1/3 lg:basis-1/3">
+                        <motion.div 
+                          initial={{
+                            opacity: 0,
+                            y: 20
+                          }} 
+                          animate={{
+                            opacity: 1,
+                            y: 0
+                          }} 
+                          transition={{
+                            duration: 0.4
+                          }} 
+                          className="h-full"
+                        >
                           <Card className="h-full">
                             <CardHeader className="p-4 sm:p-6">
                               <div className="flex justify-between items-start">
@@ -723,7 +727,8 @@ const Dashboard = () => {
                             </CardContent>
                           </Card>
                         </motion.div>
-                      </CarouselItem>)}
+                      </CarouselItem>
+                    ))}
                   </CarouselContent>
                   <div className="hidden sm:block">
                     <CarouselPrevious ref={prevBtnRef} className="left-0" />
@@ -815,3 +820,17 @@ const Dashboard = () => {
                         >
                           Send
                         </Button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </>
+        )}
+      </main>
+    </div>
+  );
+};
+
+export default Dashboard;
