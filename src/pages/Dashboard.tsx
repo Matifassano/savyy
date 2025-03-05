@@ -410,7 +410,7 @@ const Dashboard = () => {
           <nav className="flex items-center justify-between px-4">
             <div className="flex items-center space-x-6">
               <Link to="/dashboard" className="text-2xl font-bold text-primary">
-                PromoAlert
+                Zeny
               </Link>
             </div>
             <div className="flex items-center space-x-4">
@@ -418,9 +418,17 @@ const Dashboard = () => {
                 variant="outline" 
                 size="sm" 
                 onClick={signOut} 
-                className="flex items-center gap-2"
+                className="hidden sm:flex items-center gap-2"
               >
                 <LogOut className="h-4 w-4" /> Logout
+              </Button>
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                onClick={signOut} 
+                className="sm:hidden h-9 w-9"
+              >
+                <LogOut className="h-5 w-5" />
               </Button>
               <Button variant="ghost" size="icon" onClick={toggleTheme} className="h-9 w-9">
                 {theme === "light" ? <Moon className="h-5 w-5" /> : <Sun className="h-5 w-5" />}
