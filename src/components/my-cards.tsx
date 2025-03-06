@@ -797,16 +797,16 @@ export const MyCards = ({ onCardsChange }: MyCardsProps) => {
                 </div>
               </div>
               <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="edit-status" className="text-right">Active</Label>
-                <div className="col-span-3 flex items-center">
+                <Label htmlFor="edit-status" className="text-right">Card Status</Label>
+                <div className="col-span-3 flex items-center gap-2">
                   <Switch 
                     id="edit-status"
                     checked={editedCard.status === "active"}
                     onCheckedChange={handleStatusToggle}
                   />
-                  <span className="ml-2 text-sm capitalize">
-                    {editedCard.status}
-                  </span>
+                  <Label htmlFor="edit-status" className="text-sm text-muted-foreground">
+                    {editedCard.status === "active" ? "Active" : "Inactive"}
+                  </Label>
                 </div>
               </div>
             </div>
