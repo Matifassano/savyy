@@ -28,13 +28,13 @@ This project is built with .
 - Tailwind CSS
 
 ## To Do:
-- Edit expirate date to **01/26 ex**, also in 
+- Change carrousel buttons in desktop ✅
+- Add Footer Links - Privacy Police and Terms of Service ✅
+- Edit expirate date to **01/26 ex**
 - Fix Active/Inactive button in cards section
 - Fix filter button
-- Change carrousel buttons in desktop ✅
 - Add the UI connection to Zeny in mobile version
 - Add cookies
-- Add Footer Links
 - Delete promotions example
 - Check display "Sign in" toast
 
