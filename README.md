@@ -27,8 +27,9 @@ This project is built with .
 - shadcn-ui
 - Tailwind CSS
 
-## TO DO:
+## To Do:
 - Edit expirate date to **01/26 ex**, also in db
+- Fix Active/Inactive button in cards section
 - Add the UI connection to Zeny in mobile version
 - Add cookies
 - Add Footer Links

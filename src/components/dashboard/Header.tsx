@@ -36,25 +36,6 @@ export const Header = ({
             </Link>
           </div>
           <div className="flex items-center space-x-4">
-            <Button 
-              variant="outline" 
-              size="sm" 
-              onClick={signOut} 
-              className="hidden sm:flex items-center gap-2"
-            >
-              <LogOut className="h-4 w-4" /> Logout
-            </Button>
-            <Button 
-              variant="ghost" 
-              size="icon" 
-              onClick={signOut} 
-              className="sm:hidden h-9 w-9"
-            >
-              <LogOut className="h-5 w-5" />
-            </Button>
-            <Button variant="ghost" size="icon" onClick={toggleTheme} className="h-9 w-9">
-              {theme === "light" ? <Moon className="h-5 w-5" /> : <Sun className="h-5 w-5" />}
-            </Button>
             <Sheet>
               <SheetTrigger asChild>
                 <Button variant="ghost" size="icon" className="h-9 w-9 relative">
@@ -72,6 +53,25 @@ export const Header = ({
                 onMarkAllAsRead={markAllNotificationsAsRead}
               />
             </Sheet>
+            <Button variant="ghost" size="icon" onClick={toggleTheme} className="h-9 w-9">
+              {theme === "light" ? <Moon className="h-5 w-5" /> : <Sun className="h-5 w-5" />}
+            </Button>
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={signOut} 
+              className="hidden sm:flex items-center gap-2"
+            >
+              <LogOut className="h-4 w-4" /> Logout
+            </Button>
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              onClick={signOut} 
+              className="sm:hidden h-9 w-9"
+            >
+              <LogOut className="h-5 w-5" />
+            </Button>
           </div>
         </nav>
       </div>
