@@ -1,5 +1,5 @@
 
-import { Bot, MessageCircle, SendHorizontal } from "lucide-react";
+import { Bot, Info, MessageCircle, SendHorizontal } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
@@ -24,7 +24,8 @@ export const ZenyChat = ({ connectedApps }: ZenyChatProps) => {
   const handleLearnMore = () => {
     toast({
       title: "About Savy",
-      description: "Savy is a minimalist finance chatbot that helps you manage your personal finances.",
+      description: "Savy is an AI-powered finance assistant built directly into this app. Ask about your spending habits, budgeting tips, or how to optimize your finances.",
+      duration: 6000,
     });
   };
 
@@ -64,8 +65,8 @@ export const ZenyChat = ({ connectedApps }: ZenyChatProps) => {
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-xl font-bold">Chat with Savy</h2>
         <Button size="sm" variant="outline" onClick={handleLearnMore}>
-          <MessageCircle className="mr-2 h-4 w-4" />
-          Learn More
+          <Info className="mr-2 h-4 w-4" />
+          About Savy
         </Button>
       </div>
       
@@ -78,10 +79,7 @@ export const ZenyChat = ({ connectedApps }: ZenyChatProps) => {
                 <Bot className="h-16 w-16 text-blue-500" />
               </div>
               <h3 className="text-xl font-semibold mb-2">Savy</h3>
-              <p className="text-sm text-muted-foreground mb-4">A minimalist finance chatbot to manage your personal finances</p>
-              <Button className="w-full">
-                {connectedApps[0].connected ? "Disconnect" : "Connect Now"}
-              </Button>
+              <p className="text-sm text-muted-foreground mb-4">Your AI finance assistant built into the app to help analyze your spending and provide personalized advice</p>
             </div>
             <div className="col-span-2 bg-white/80 dark:bg-slate-900/80 rounded-lg p-6">
               <h4 className="font-medium mb-4 flex items-center">
@@ -109,11 +107,9 @@ export const ZenyChat = ({ connectedApps }: ZenyChatProps) => {
                   onKeyDown={handleKeyPress}
                   placeholder="Type your message..." 
                   className="rounded-r-none"
-                  disabled={!connectedApps[0].connected}
                 />
                 <Button 
                   className="rounded-l-none" 
-                  disabled={!connectedApps[0].connected}
                   onClick={handleSendMessage}
                 >
                   <SendHorizontal className="h-4 w-4" />
@@ -136,13 +132,6 @@ export const ZenyChat = ({ connectedApps }: ZenyChatProps) => {
                 <h3 className="font-semibold">Savy</h3>
                 <p className="text-xs text-muted-foreground">Your finance assistant</p>
               </div>
-              <Button 
-                size="sm" 
-                variant="outline" 
-                className="ml-auto"
-              >
-                {connectedApps[0].connected ? "Disconnect" : "Connect"}
-              </Button>
             </div>
           </CardHeader>
           <CardContent className="p-3">
@@ -169,12 +158,10 @@ export const ZenyChat = ({ connectedApps }: ZenyChatProps) => {
                 onKeyDown={handleKeyPress}
                 placeholder="Message Savy..." 
                 className="rounded-r-none text-sm"
-                disabled={!connectedApps[0].connected}
               />
               <Button 
                 size="sm"
                 className="rounded-l-none" 
-                disabled={!connectedApps[0].connected}
                 onClick={handleSendMessage}
               >
                 <SendHorizontal className="h-4 w-4" />
