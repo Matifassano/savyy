@@ -53,9 +53,9 @@ const Index = () => {
       description: "Essential features for casual users",
       features: [
         "Add up to 2 cards",
-        "Basic notifications",
+        "5 chat messages per week",
         "Email support",
-        "Web access"
+        "3 Promotions per card"
       ],
       cta: "Get Started",
       popular: false
@@ -67,29 +67,27 @@ const Index = () => {
       description: "Advanced features for active users",
       features: [
         "Add up to 5 cards",
-        "Priority notifications",
+        "15 chat messages per week",
         "Priority email support",
-        "Web access",
-        "Personalized offers"
+        "10 Promotions per card",
+        "Support Zeny connection"
       ],
       cta: "Go Premium",
       popular: true
     },
     {
-      name: "Premium+",
-      price: "$9.99",
+      name: "Ultimate",
+      price: "$7.99",
       period: "per month",
       description: "Ultimate experience for power users",
       features: [
         "Unlimited cards",
-        "Instant notifications",
+        "Unlimited chat messages",
         "VIP email support",
-        "Web access",
-        "Personalized offers",
-        "Family accounts (up to 5)",
-        "Exclusive promotions"
+        "Unlimited promotions per card",
+        "Support Zeny connection"
       ],
-      cta: "Go Premium+",
+      cta: "Go Ultimate",
       popular: false
     }
   ];

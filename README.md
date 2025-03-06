@@ -33,10 +33,10 @@ This project is built with .
 - Edit expirate date to **01/26 ex** ✅
 - Fix Active/Inactive button in cards section ✅
 - Fix filter button ✅ (Still wrong the bank Filter)
-- Add the UI connection to Zeny in mobile version
 - Add cookies
 - Delete promotions example
 - Check display "Sign in" toast
 
 - Start with the scraping
 - Start with the intelligent alerts
+- Add the Zeny UI
