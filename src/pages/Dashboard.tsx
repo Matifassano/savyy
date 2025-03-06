@@ -32,7 +32,7 @@ const ageOptions = ["All Promotions", "New", "Existing"];
 const initialConnectedApps: ConnectedApp[] = [
   { 
     id: 'savy',
-    name: 'Zeny',
+    name: 'Savy',
     icon: <Bot className="h-8 w-8 text-blue-500" />,
     connected: false,
     description: 'A minimalist finance chatbot to manage your personal finances'

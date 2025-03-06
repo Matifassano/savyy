@@ -12,7 +12,6 @@ export type Database = {
       cards: {
         Row: {
           bank: string | null
-          card_name: string | null
           card_type: string | null
           color: string | null
           created_at: string
@@ -25,7 +24,6 @@ export type Database = {
         }
         Insert: {
           bank?: string | null
-          card_name?: string | null
           card_type?: string | null
           color?: string | null
           created_at?: string
@@ -38,7 +36,6 @@ export type Database = {
         }
         Update: {
           bank?: string | null
-          card_name?: string | null
           card_type?: string | null
           color?: string | null
           created_at?: string
