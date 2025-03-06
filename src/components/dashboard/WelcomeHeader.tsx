@@ -1,5 +1,9 @@
 import { PromoFilters } from "./PromoFilters";
 import { FilterType } from "@/types/dashboard";
+import { Button } from "@/components/ui/button";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
 
 interface WelcomeHeaderProps {
   filters: FilterType;
@@ -7,11 +11,11 @@ interface WelcomeHeaderProps {
   showOnlyCompatible: boolean;
   categories: string[];
   banks: string[];
-  ageOptions: string[];
+  promotionTypes: string[];
   cardTypes: string[];
   setActiveFilter: (filter: keyof FilterType) => void;
   handleFilterChange: (key: keyof FilterType, value: string) => void;
-  setShowOnlyCompatible: (value: boolean) => void;
+  setShowOnlyCompatible: (show: boolean) => void;
   getFilterDisplayText: () => string;
   setShowCards: (show: boolean) => void;
 }
@@ -22,7 +26,7 @@ export const WelcomeHeader = ({
   showOnlyCompatible,
   categories,
   banks,
-  ageOptions,
+  promotionTypes,
   cardTypes,
   setActiveFilter,
   handleFilterChange,
@@ -31,27 +35,79 @@ export const WelcomeHeader = ({
   setShowCards
 }: WelcomeHeaderProps) => {
   return (
-    <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 sm:gap-0 mb-6 sm:mb-8">
-      <div>
-        <h1 className="text-2xl sm:text-3xl font-bold">Welcome back!</h1>
-        <p className="text-muted-foreground mt-1">
-          Here are your current promotions
-        </p>
+    <div className="space-y-6">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div>
+          <h1 className="text-2xl font-bold">Welcome back!</h1>
+          <p className="text-muted-foreground">Discover the best promotions for your cards</p>
+        </div>
+        <Button variant="outline" onClick={() => setShowCards(true)}>
+          Manage Cards
+        </Button>
       </div>
-      <PromoFilters 
-        filters={filters}
-        activeFilter={activeFilter}
-        showOnlyCompatible={showOnlyCompatible}
-        categories={categories}
-        banks={banks}
-        ageOptions={ageOptions}
-        cardTypes={cardTypes}
-        setActiveFilter={setActiveFilter}
-        handleFilterChange={handleFilterChange}
-        setShowOnlyCompatible={setShowOnlyCompatible}
-        getFilterDisplayText={getFilterDisplayText}
-        setShowCards={setShowCards}
-      />
+
+      <div className="flex flex-col sm:flex-row gap-4">
+        <div className="flex-1">
+          <Select
+            value={activeFilter}
+            onValueChange={(value) => setActiveFilter(value as keyof FilterType)}
+          >
+            <SelectTrigger>
+              <SelectValue placeholder="Filter by" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="category">Category</SelectItem>
+              <SelectItem value="bank">Bank</SelectItem>
+              <SelectItem value="promotionType">Promotion Type</SelectItem>
+              <SelectItem value="cardType">Card Type</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+
+        <div className="flex-1">
+          <Select
+            value={filters[activeFilter]}
+            onValueChange={(value) => handleFilterChange(activeFilter, value)}
+          >
+            <SelectTrigger>
+              <SelectValue placeholder={getFilterDisplayText()} />
+            </SelectTrigger>
+            <SelectContent>
+              {activeFilter === "category" && categories.map((category) => (
+                <SelectItem key={category} value={category}>
+                  {category}
+                </SelectItem>
+              ))}
+              {activeFilter === "bank" && banks.map((bank) => (
+                <SelectItem key={bank} value={bank}>
+                  {bank}
+                </SelectItem>
+              ))}
+              {activeFilter === "promotionType" && promotionTypes.map((type) => (
+                <SelectItem key={type} value={type}>
+                  {type}
+                </SelectItem>
+              ))}
+              {activeFilter === "cardType" && cardTypes.map((type) => (
+                <SelectItem key={type} value={type}>
+                  {type}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+
+        <div className="flex items-center gap-2">
+          <Switch
+            id="compatible-only"
+            checked={showOnlyCompatible}
+            onCheckedChange={setShowOnlyCompatible}
+          />
+          <Label htmlFor="compatible-only" className="text-sm">
+            Show only compatible cards
+          </Label>
+        </div>
+      </div>
     </div>
   );
 }; 

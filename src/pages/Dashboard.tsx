@@ -21,13 +21,13 @@ import { promotions } from "@/data/promotions";
 
 // Constants moved from Dashboard to separate constants
 const uniqueCategories = Array.from(new Set(promotions.map(promo => promo.category)));
-const categories = ["All", ...uniqueCategories];
+const categories = ["All Categories", ...uniqueCategories];
 
 const uniqueBanks = Array.from(new Set(promotions.map(promo => promo.bank)));
 const banks = ["All Banks", ...uniqueBanks];
 
-const cardTypes = ["All Cards", "Credit", "Debit"];
-const ageOptions = ["All Promotions", "New", "Existing"];
+const cardTypes = ["All Cards", "Credit Cards", "Debit Cards"];
+const promotionTypes = ["All Promotions", "New This Week", "Limited Time", "Exclusive"];
 
 const initialConnectedApps: ConnectedApp[] = [
   { 
@@ -43,9 +43,9 @@ const Dashboard = () => {
   const { user, signOut } = useUser();
   const navigate = useNavigate();
   const [filters, setFilters] = useState<FilterType>({
-    category: "All",
+    category: "All Categories",
     bank: "All Banks",
-    age: "All Promotions",
+    promotionType: "All Promotions",
     cardType: "All Cards"
   });
   const [activeFilter, setActiveFilter] = useState<keyof FilterType>("category");
@@ -77,6 +77,18 @@ const Dashboard = () => {
       fetchNotifications();
     }
   }, [user]);
+
+  // Add effect to handle showOnlyCompatible when no banks are available
+  useEffect(() => {
+    if (showOnlyCompatible && availableBanks.length === 0) {
+      toast({
+        title: "No cards available",
+        description: "Add some cards first to filter compatible promotions",
+        duration: 3000,
+      });
+      setShowOnlyCompatible(false);
+    }
+  }, [showOnlyCompatible, availableBanks]);
 
   const fetchNotifications = async () => {
     if (!user) return;
@@ -210,11 +222,11 @@ const Dashboard = () => {
   };
 
   const filteredPromotions = promotions.filter((promo: Promotion) => {
-    if (showOnlyCompatible && availableBanks.length > 0 && !availableBanks.includes(promo.bank)) {
+    if (showOnlyCompatible && !availableBanks.includes(promo.bank)) {
       return false;
     }
     
-    if (filters.category !== "All" && promo.category !== filters.category) {
+    if (filters.category !== "All Categories" && promo.category !== filters.category) {
       return false;
     }
     
@@ -222,15 +234,23 @@ const Dashboard = () => {
       return false;
     }
     
-    if (filters.age === "New" && !promo.isNew) {
-      return false;
-    } else if (filters.age === "Existing" && promo.isNew) {
-      return false;
+    if (filters.promotionType !== "All Promotions") {
+      switch (filters.promotionType) {
+        case "New This Week":
+          if (!promo.isNew) return false;
+          break;
+        case "Limited Time":
+          if (!promo.isLimitedTime) return false;
+          break;
+        case "Exclusive":
+          if (!promo.isExclusive) return false;
+          break;
+      }
     }
     
-    if (filters.cardType === "Credit" && promo.cardType !== "credit") {
+    if (filters.cardType === "Credit Cards" && promo.cardType !== "credit") {
       return false;
-    } else if (filters.cardType === "Debit" && promo.cardType !== "debit") {
+    } else if (filters.cardType === "Debit Cards" && promo.cardType !== "debit") {
       return false;
     }
     
@@ -245,10 +265,10 @@ const Dashboard = () => {
     const activeFilterValue = filters[activeFilter];
     switch(activeFilter) {
       case "category":
-        return `${activeFilterValue} Promotions`;
+        return activeFilterValue;
       case "bank":
         return activeFilterValue;
-      case "age":
+      case "promotionType":
         return activeFilterValue;
       case "cardType":
         return activeFilterValue;
@@ -274,13 +294,13 @@ const Dashboard = () => {
   };
 
   const resetFilters = () => {
-                    setFilters({
-                      category: "All",
-                      bank: "All Banks",
-                      age: "All Promotions",
-                      cardType: "All Cards"
-                    });
-                    setShowOnlyCompatible(false);
+    setFilters({
+      category: "All Categories",
+      bank: "All Banks",
+      promotionType: "All Promotions",
+      cardType: "All Cards"
+    });
+    setShowOnlyCompatible(false);
   };
 
   const handleCardsChange = (cards: any[]) => {
@@ -326,7 +346,7 @@ const Dashboard = () => {
               showOnlyCompatible={showOnlyCompatible}
               categories={categories}
               banks={banks}
-              ageOptions={ageOptions}
+              promotionTypes={promotionTypes}
               cardTypes={cardTypes}
               setActiveFilter={setActiveFilter}
               handleFilterChange={handleFilterChange}

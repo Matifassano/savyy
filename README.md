@@ -30,9 +30,9 @@ This project is built with .
 ## To Do:
 - Change carrousel buttons in desktop ✅
 - Add Footer Links - Privacy Police and Terms of Service ✅
-- Edit expirate date to **01/26 ex**
-- Fix Active/Inactive button in cards section
-- Fix filter button
+- Edit expirate date to **01/26 ex** ✅
+- Fix Active/Inactive button in cards section ✅
+- Fix filter button ✅ (Still wrong the bank Filter)
 - Add the UI connection to Zeny in mobile version
 - Add cookies
 - Delete promotions example

@@ -821,23 +821,14 @@ export const MyCards = ({ onCardsChange }: MyCardsProps) => {
               <Trash2 className="h-4 w-4" />
               Remove
             </Button>
-            <div className="flex gap-2">
-              <Button 
-                type="button" 
-                variant="outline" 
-                onClick={() => setIsManageDialogOpen(false)}
-              >
-                Cancel
-              </Button>
-              <Button 
-                type="button" 
-                onClick={handleSaveChanges}
-                className="flex items-center gap-2"
-              >
-                <Edit className="h-4 w-4" />
-                Save Changes
-              </Button>
-            </div>
+            <Button 
+              type="button" 
+              onClick={handleSaveChanges}
+              className="flex items-center gap-2 mb-2"
+            >
+              <Edit className="h-4 w-4" />
+              Save Changes
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

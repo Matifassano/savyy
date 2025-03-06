@@ -17,6 +17,10 @@ export interface Promotion {
   category: string;
   isNew: boolean;
   cardType: string;
+  expiration_date: string;
+  link_promotion: string;
+  isLimitedTime: boolean;
+  isExclusive: boolean;
 }
 
 export interface ConnectedApp {
@@ -27,9 +31,9 @@ export interface ConnectedApp {
   description: string;
 }
 
-export type FilterType = {
+export interface FilterType {
   category: string;
   bank: string;
-  age: string;
+  promotionType: string;
   cardType: string;
-}; 
+} 
