@@ -1,4 +1,3 @@
-
 import { useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
@@ -47,15 +46,6 @@ export const PromotionCarousel = ({
 
   return (
     <div className="w-full">
-      <div className="flex justify-center mb-4">
-        <Button variant="outline" size="sm" className="mx-1" onClick={handlePrevious}>
-          Previous
-        </Button>
-        <Button variant="outline" size="sm" className="mx-1" onClick={handleNext}>
-          Next
-        </Button>
-      </div>
-      
       <Carousel className="w-full">
         <CarouselContent className="-ml-2 sm:-ml-4">
           {promotions.map(promotion => (
@@ -69,6 +59,14 @@ export const PromotionCarousel = ({
           <CarouselNext ref={nextBtnRef} className="right-0" />
         </div>
       </Carousel>
+      <div className="flex justify-center mt-4">
+        <Button variant="outline" size="sm" className="mx-1" onClick={handlePrevious}>
+          Previous
+        </Button>
+        <Button variant="outline" size="sm" className="mx-1" onClick={handleNext}>
+          Next
+        </Button>
+      </div>
     </div>
   );
 };

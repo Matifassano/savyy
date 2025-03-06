@@ -340,7 +340,7 @@ const Dashboard = () => {
                 promotions={filteredPromotions}
                 resetFilters={resetFilters}
               />
-              </div>
+            </div>
               
             <ZenyChat connectedApps={connectedAppsList} />
           </>

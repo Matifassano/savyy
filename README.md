@@ -28,8 +28,10 @@ This project is built with .
 - Tailwind CSS
 
 ## To Do:
-- Edit expirate date to **01/26 ex**, also in db
+- Edit expirate date to **01/26 ex**, also in 
 - Fix Active/Inactive button in cards section
+- Fix filter button
+- Change carrousel buttons in desktop ✅
 - Add the UI connection to Zeny in mobile version
 - Add cookies
 - Add Footer Links
