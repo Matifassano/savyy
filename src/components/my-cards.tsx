@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -8,6 +7,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useUser } from "@/contexts/UserContext";
@@ -44,6 +44,7 @@ export const MyCards = ({ onCardsChange }: MyCardsProps) => {
   const { user } = useUser();
   const [expandedCard, setExpandedCard] = useState<number | null>(null);
   const [cards, setCards] = useState<CardType[]>([]);
+  const [errors, setErrors] = useState<Record<string, string>>({});
   const [newCard, setNewCard] = useState({
     bank: "",
     payment_network: "",
@@ -127,20 +128,60 @@ export const MyCards = ({ onCardsChange }: MyCardsProps) => {
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setNewCard(prev => ({
-      ...prev,
-      [name]: value
-    }));
+    
+    if (name === 'expiration_date') {
+      // Remove any non-digit characters except '/'
+      const cleanedValue = value.replace(/[^\d/]/g, '');
+      
+      // If the value is longer than 2 digits and doesn't have a slash, add it
+      if (cleanedValue.length > 2 && !cleanedValue.includes('/')) {
+        const formattedValue = cleanedValue.slice(0, 2) + '/' + cleanedValue.slice(2);
+        setNewCard(prev => ({
+          ...prev,
+          [name]: formattedValue
+        }));
+      } else {
+        setNewCard(prev => ({
+          ...prev,
+          [name]: cleanedValue
+        }));
+      }
+    } else {
+      setNewCard(prev => ({
+        ...prev,
+        [name]: value
+      }));
+    }
   };
 
   const handleEditInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!editedCard) return;
     
     const { name, value } = e.target;
-    setEditedCard(prev => ({
-      ...prev!,
-      [name]: value
-    }));
+    
+    if (name === 'expiration_date') {
+      // Remove any non-digit characters except '/'
+      const cleanedValue = value.replace(/[^\d/]/g, '');
+      
+      // If the value is longer than 2 digits and doesn't have a slash, add it
+      if (cleanedValue.length > 2 && !cleanedValue.includes('/')) {
+        const formattedValue = cleanedValue.slice(0, 2) + '/' + cleanedValue.slice(2);
+        setEditedCard(prev => ({
+          ...prev!,
+          [name]: formattedValue
+        }));
+      } else {
+        setEditedCard(prev => ({
+          ...prev!,
+          [name]: cleanedValue
+        }));
+      }
+    } else {
+      setEditedCard(prev => ({
+        ...prev!,
+        [name]: value
+      }));
+    }
   };
 
   const handleStatusToggle = (checked: boolean) => {
@@ -152,9 +193,72 @@ export const MyCards = ({ onCardsChange }: MyCardsProps) => {
     }));
   };
 
+  const validateForm = (card: typeof newCard | CardType) => {
+    const newErrors: Record<string, string> = {};
+    
+    if (!card.bank) {
+      newErrors.bank = "Bank is required";
+    }
+    
+    if (!card.payment_network) {
+      newErrors.payment_network = "Payment network is required";
+    }
+    
+    if (!card.card_type) {
+      newErrors.card_type = "Card type is required";
+    }
+    
+    if (!card.last_digits) {
+      newErrors.last_digits = "Last 4 digits are required";
+    } else if (!/^\d{4}$/.test(card.last_digits.toString())) {
+      newErrors.last_digits = "Last 4 digits must be numbers";
+    }
+    
+    if (!card.expiration_date) {
+      newErrors.expiration_date = "Expiration date is required";
+    } else if (!/^\d{2}\/\d{2}$/.test(card.expiration_date)) {
+      newErrors.expiration_date = "Invalid format. Use MM/YY";
+    } else {
+      // Validate the date
+      const [month, year] = card.expiration_date.split('/');
+      const expMonth = parseInt(month);
+      const expYear = parseInt('20' + year); // Convert YY to YYYY
+      
+      // Create date objects
+      const today = new Date();
+      const currentYear = today.getFullYear();
+      const currentMonth = today.getMonth() + 1;
+      
+      // Create expiration date
+      const expirationDate = new Date(expYear, expMonth - 1);
+      const maxDate = new Date(currentYear + 10, currentMonth - 1);
+      
+      // Validate month is between 1 and 12
+      if (expMonth < 1 || expMonth > 12) {
+        newErrors.expiration_date = "Month must be between 01 and 12";
+      }
+      // Validate year is not in the past
+      else if (expYear < currentYear || (expYear === currentYear && expMonth < currentMonth)) {
+        newErrors.expiration_date = "Card has expired";
+      }
+      // Validate year is not more than 10 years in the future
+      else if (expirationDate > maxDate) {
+        newErrors.expiration_date = "Expiration date cannot be more than 10 years in the future";
+      }
+    }
+    
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
   const handleAddCard = async () => {
     if (!user) {
       toast.error("You must be logged in to add a card");
+      return;
+    }
+    
+    if (!validateForm(newCard)) {
+      toast.error("Please fill all required fields correctly");
       return;
     }
     
@@ -164,7 +268,7 @@ export const MyCards = ({ onCardsChange }: MyCardsProps) => {
       bank: newCard.bank,
       payment_network: newCard.payment_network,
       card_type: newCard.card_type,
-      last_digits: parseInt(newCard.last_digits) || null,
+      last_digits: parseInt(newCard.last_digits),
       expiration_date: newCard.expiration_date,
       status: newCard.status,
       color: randomColor,
@@ -199,6 +303,7 @@ export const MyCards = ({ onCardsChange }: MyCardsProps) => {
           expiration_date: "",
           status: "active"
         });
+        setErrors({});
         
         setIsDialogOpen(false);
         
@@ -206,7 +311,6 @@ export const MyCards = ({ onCardsChange }: MyCardsProps) => {
           description: `${newCardWithId.payment_network} has been added to your account.`
         });
         
-        // Create notification for added card
         await createNotification(`Card Added Successfully`, `Your ${newCardWithId.payment_network} has been added to your account.`);
       }
     } catch (error) {
@@ -225,6 +329,11 @@ export const MyCards = ({ onCardsChange }: MyCardsProps) => {
   const handleSaveChanges = async () => {
     if (!editedCard || !user) return;
 
+    if (!validateForm(editedCard)) {
+      toast.error("Please fill all required fields correctly");
+      return;
+    }
+
     try {
       const { error } = await supabase
         .from('cards')
@@ -232,6 +341,7 @@ export const MyCards = ({ onCardsChange }: MyCardsProps) => {
           bank: editedCard.bank,
           payment_network: editedCard.payment_network,
           card_type: editedCard.card_type,
+          last_digits: typeof editedCard.last_digits === 'string' ? parseInt(editedCard.last_digits) : editedCard.last_digits,
           expiration_date: editedCard.expiration_date,
           status: editedCard.status,
         })
@@ -253,12 +363,12 @@ export const MyCards = ({ onCardsChange }: MyCardsProps) => {
       }
       
       setIsManageDialogOpen(false);
+      setErrors({});
       
       toast.success("Card updated successfully", {
         description: `${editedCard.payment_network} has been updated.`
       });
       
-      // Create notification for updated card
       await createNotification(`Card Updated`, `Your ${editedCard.payment_network} has been updated.`);
     } catch (error) {
       console.error("Error updating card:", error);
@@ -494,67 +604,103 @@ export const MyCards = ({ onCardsChange }: MyCardsProps) => {
               <label htmlFor="bank" className="text-right text-sm font-medium">
                 Bank
               </label>
-              <Input
-                id="bank"
-                name="bank"
-                value={newCard.bank}
-                onChange={handleInputChange}
-                className="col-span-3"
-                placeholder="Ciudad, Nacion, Macro ..."
-              />
+              <div className="col-span-3">
+                <Select
+                  name="bank"
+                  value={newCard.bank}
+                  onValueChange={(value) => setNewCard(prev => ({ ...prev, bank: value }))}
+                >
+                  <SelectTrigger id="bank" className={errors.bank ? "border-red-500" : ""}>
+                    <SelectValue placeholder="Select bank" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Nacion">Nacion</SelectItem>
+                    <SelectItem value="Ciudad">Ciudad</SelectItem>
+                    <SelectItem value="Galicia">Galicia</SelectItem>
+                    <SelectItem value="Macro">Macro</SelectItem>
+                    <SelectItem value="BBVA">BBVA</SelectItem>
+                  </SelectContent>
+                </Select>
+                {errors.bank && <p className="text-sm text-red-500 mt-1">{errors.bank}</p>}
+              </div>
             </div>
             <div className="grid grid-cols-4 items-center gap-4">
               <label htmlFor="payment_network" className="text-right text-sm font-medium">
                 Payment Network
               </label>
-              <Input
-                id="payment_network"
-                name="payment_network"
-                value={newCard.payment_network}
-                onChange={handleInputChange}
-                className="col-span-3"
-                placeholder="Visa, Mastercard, Amex ..."
-              />
+              <div className="col-span-3">
+                <Select
+                  name="payment_network"
+                  value={newCard.payment_network}
+                  onValueChange={(value) => setNewCard(prev => ({ ...prev, payment_network: value }))}
+                >
+                  <SelectTrigger id="payment_network" className={errors.payment_network ? "border-red-500" : ""}>
+                    <SelectValue placeholder="Select payment network" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="American Express">American Express</SelectItem>
+                    <SelectItem value="Mastercard">Mastercard</SelectItem>
+                    <SelectItem value="Visa">Visa</SelectItem>
+                  </SelectContent>
+                </Select>
+                {errors.payment_network && <p className="text-sm text-red-500 mt-1">{errors.payment_network}</p>}
+              </div>
             </div>
             <div className="grid grid-cols-4 items-center gap-4">
               <label htmlFor="card_type" className="text-right text-sm font-medium">
                 Card Type
               </label>
-              <Input
-                id="card_type"
-                name="card_type"
-                value={newCard.card_type}
-                onChange={handleInputChange}
-                className="col-span-3"
-                placeholder="Debito, Credito ..."
-              />
+              <div className="col-span-3">
+                <Select
+                  name="card_type"
+                  value={newCard.card_type}
+                  onValueChange={(value) => setNewCard(prev => ({ ...prev, card_type: value }))}
+                >
+                  <SelectTrigger id="card_type" className={errors.card_type ? "border-red-500" : ""}>
+                    <SelectValue placeholder="Select card type" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Debit">Debit</SelectItem>
+                    <SelectItem value="Credit">Credit</SelectItem>
+                  </SelectContent>
+                </Select>
+                {errors.card_type && <p className="text-sm text-red-500 mt-1">{errors.card_type}</p>}
+              </div>
             </div>
             <div className="grid grid-cols-4 items-center gap-4">
               <label htmlFor="last_digits" className="text-right text-sm font-medium">
                 Last 4 Digits
               </label>
-              <Input
-                id="last_digits"
-                name="last_digits"
-                value={newCard.last_digits}
-                onChange={handleInputChange}
-                className="col-span-3"
-                placeholder="1234"
-                maxLength={4}
-              />
+              <div className="col-span-3">
+                <Input
+                  id="last_digits"
+                  name="last_digits"
+                  value={newCard.last_digits}
+                  onChange={handleInputChange}
+                  className={errors.last_digits ? "border-red-500" : ""}
+                  placeholder="1234"
+                  maxLength={4}
+                />
+                {errors.last_digits && <p className="text-sm text-red-500 mt-1">{errors.last_digits}</p>}
+              </div>
             </div>
             <div className="grid grid-cols-4 items-center gap-4">
               <label htmlFor="expiration_date" className="text-right text-sm font-medium">
                 Expiry Date
               </label>
-              <Input
-                id="expiration_date"
-                name="expiration_date"
-                value={newCard.expiration_date}
-                onChange={handleInputChange}
-                className="col-span-3"
-                placeholder="MM/YY"
-              />
+              <div className="col-span-3">
+                <Input
+                  id="expiration_date"
+                  name="expiration_date"
+                  value={newCard.expiration_date}
+                  onChange={handleInputChange}
+                  className={errors.expiration_date ? "border-red-500" : ""}
+                  placeholder="MM/YY"
+                  maxLength={5}
+                  pattern="[0-9]{2}/[0-9]{2}"
+                />
+                {errors.expiration_date && <p className="text-sm text-red-500 mt-1">{errors.expiration_date}</p>}
+              </div>
             </div>
           </div>
           <DialogFooter>
@@ -575,43 +721,80 @@ export const MyCards = ({ onCardsChange }: MyCardsProps) => {
             <div className="grid gap-4 py-4">
               <div className="grid grid-cols-4 items-center gap-4">
                 <Label htmlFor="edit-bank" className="text-right">Bank</Label>
-                <Input
-                  id="edit-bank"
-                  name="bank"
-                  value={editedCard.bank}
-                  onChange={handleEditInputChange}
-                  className="col-span-3"
-                />
+                <div className="col-span-3">
+                  <Select
+                    name="bank"
+                    value={editedCard.bank}
+                    onValueChange={(value) => setEditedCard(prev => ({ ...prev!, bank: value }))}
+                  >
+                    <SelectTrigger id="edit-bank" className={errors.bank ? "border-red-500" : ""}>
+                      <SelectValue placeholder="Select bank" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Nacion">Nacion</SelectItem>
+                      <SelectItem value="Ciudad">Ciudad</SelectItem>
+                      <SelectItem value="Galicia">Galicia</SelectItem>
+                      <SelectItem value="Macro">Macro</SelectItem>
+                      <SelectItem value="BBVA">BBVA</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  {errors.bank && <p className="text-sm text-red-500 mt-1">{errors.bank}</p>}
+                </div>
               </div>
               <div className="grid grid-cols-4 items-center gap-4">
                 <Label htmlFor="edit-payment_network" className="text-right">Card Name</Label>
-                <Input
-                  id="edit-payment_network"
-                  name="payment_network"
-                  value={editedCard.payment_network}
-                  onChange={handleEditInputChange}
-                  className="col-span-3"
-                />
+                <div className="col-span-3">
+                  <Select
+                    name="payment_network"
+                    value={editedCard.payment_network}
+                    onValueChange={(value) => setEditedCard(prev => ({ ...prev!, payment_network: value }))}
+                  >
+                    <SelectTrigger id="edit-payment_network" className={errors.payment_network ? "border-red-500" : ""}>
+                      <SelectValue placeholder="Select payment network" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="American Express">American Express</SelectItem>
+                      <SelectItem value="Mastercard">Mastercard</SelectItem>
+                      <SelectItem value="Visa">Visa</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  {errors.payment_network && <p className="text-sm text-red-500 mt-1">{errors.payment_network}</p>}
+                </div>
               </div>
               <div className="grid grid-cols-4 items-center gap-4">
                 <Label htmlFor="edit-card_type" className="text-right">Card Type</Label>
-                <Input
-                  id="edit-card_type"
-                  name="card_type"
-                  value={editedCard.card_type}
-                  onChange={handleEditInputChange}
-                  className="col-span-3"
-                />
+                <div className="col-span-3">
+                  <Select
+                    name="card_type"
+                    value={editedCard.card_type}
+                    onValueChange={(value) => setEditedCard(prev => ({ ...prev!, card_type: value }))}
+                  >
+                    <SelectTrigger id="edit-card_type" className={errors.card_type ? "border-red-500" : ""}>
+                      <SelectValue placeholder="Select card type" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Debit">Debit</SelectItem>
+                      <SelectItem value="Credit">Credit</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  {errors.card_type && <p className="text-sm text-red-500 mt-1">{errors.card_type}</p>}
+                </div>
               </div>
               <div className="grid grid-cols-4 items-center gap-4">
                 <Label htmlFor="edit-expiration_date" className="text-right">Expiry Date</Label>
-                <Input
-                  id="edit-expiration_date"
-                  name="expiration_date"
-                  value={formatExpiryDate(editedCard.expiration_date)}
-                  onChange={handleEditInputChange}
-                  className="col-span-3"
-                />
+                <div className="col-span-3">
+                  <Input
+                    id="edit-expiration_date"
+                    name="expiration_date"
+                    value={editedCard.expiration_date}
+                    onChange={handleEditInputChange}
+                    className={errors.expiration_date ? "border-red-500" : ""}
+                    maxLength={5}
+                    pattern="[0-9]{2}/[0-9]{2}"
+                    placeholder="MM/YY"
+                  />
+                  {errors.expiration_date && <p className="text-sm text-red-500 mt-1">{errors.expiration_date}</p>}
+                </div>
               </div>
               <div className="grid grid-cols-4 items-center gap-4">
                 <Label htmlFor="edit-status" className="text-right">Active</Label>
