@@ -26,3 +26,14 @@ This project is built with .
 - React
 - shadcn-ui
 - Tailwind CSS
+
+## TO DO:
+- Edit expirate date to **01/26 ex**, also in db
+- Add the UI connection to Zeny in mobile version
+- Add cookies
+- Add Footer Links
+- Delete promotions example
+- Check display "Sign in" toast
+
+- Start with the scraping
+- Start with the intelligent alerts
