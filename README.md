@@ -28,15 +28,10 @@ This project is built with .
 - Tailwind CSS
 
 ## To Do:
-- Change carrousel buttons in desktop ✅
-- Add Footer Links - Privacy Police and Terms of Service ✅
-- Edit expirate date to **01/26 ex** ✅
-- Fix Active/Inactive button in cards section ✅
-- Fix filter button ✅ (Still wrong the bank Filter)
-- Add cookies
-- Delete promotions example
 - Check display "Sign in" toast
+- Add cookies
 
 - Start with the scraping
+- Delete promotions example
 - Start with the intelligent alerts
 - Add the Zeny UI
