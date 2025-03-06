@@ -1,3 +1,4 @@
+
 import { useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
@@ -45,19 +46,8 @@ export const PromotionCarousel = ({
   }
 
   return (
-    <Carousel className="w-full">
-      <CarouselContent className="-ml-2 sm:-ml-4">
-        {promotions.map(promotion => (
-          <CarouselItem key={promotion.id} className="pl-2 sm:pl-4 basis-full sm:basis-1/2 md:basis-1/3 lg:basis-1/3">
-            <PromotionCard promotion={promotion} />
-          </CarouselItem>
-        ))}
-      </CarouselContent>
-      <div className="hidden sm:block">
-        <CarouselPrevious ref={prevBtnRef} className="left-0" />
-        <CarouselNext ref={nextBtnRef} className="right-0" />
-      </div>
-      <div className="flex justify-center mt-4 sm:hidden">
+    <div className="w-full">
+      <div className="flex justify-center mb-4">
         <Button variant="outline" size="sm" className="mx-1" onClick={handlePrevious}>
           Previous
         </Button>
@@ -65,6 +55,20 @@ export const PromotionCarousel = ({
           Next
         </Button>
       </div>
-    </Carousel>
+      
+      <Carousel className="w-full">
+        <CarouselContent className="-ml-2 sm:-ml-4">
+          {promotions.map(promotion => (
+            <CarouselItem key={promotion.id} className="pl-2 sm:pl-4 basis-full sm:basis-1/2 md:basis-1/3 lg:basis-1/3">
+              <PromotionCard promotion={promotion} />
+            </CarouselItem>
+          ))}
+        </CarouselContent>
+        <div className="hidden">
+          <CarouselPrevious ref={prevBtnRef} className="left-0" />
+          <CarouselNext ref={nextBtnRef} className="right-0" />
+        </div>
+      </Carousel>
+    </div>
   );
-}; 
+};
