@@ -169,6 +169,46 @@ const Dashboard = () => {
     }
   };
 
+  const markAllNotificationsAsRead = async () => {
+    if (!user) return;
+    
+    try {
+      const unreadNotifications = userNotifications.filter(notification => !notification.read);
+      
+      if (unreadNotifications.length === 0) {
+        return; // No unread notifications
+      }
+      
+      const { error } = await supabase
+        .from('notifications')
+        .update({ read: true })
+        .eq('user_id', user.id)
+        .is('read', false);
+      
+      if (error) {
+        throw error;
+      }
+      
+      setUserNotifications(prev => 
+        prev.map(notification => ({ ...notification, read: true }))
+      );
+      
+      toast({
+        title: "Success",
+        description: `${unreadNotifications.length} notifications marked as read`,
+        duration: 5000,
+      });
+    } catch (error) {
+      console.error("Error marking all notifications as read:", error);
+      toast({
+        title: "Error",
+        description: "Failed to mark notifications as read",
+        variant: "destructive",
+        duration: 5000,
+      });
+    }
+  };
+
   const filteredPromotions = promotions.filter((promo: Promotion) => {
     if (showOnlyCompatible && availableBanks.length > 0 && !availableBanks.includes(promo.bank)) {
       return false;
@@ -263,6 +303,7 @@ const Dashboard = () => {
         isNotificationsLoading={isNotificationsLoading}
         markNotificationAsRead={markNotificationAsRead}
         handleClearAllNotifications={handleClearAllNotifications}
+        markAllNotificationsAsRead={markAllNotificationsAsRead}
       />
 
       <main className="flex-1 container mx-auto py-6 px-4 sm:py-8 sm:px-6">

@@ -13,6 +13,7 @@ interface HeaderProps {
   isNotificationsLoading: boolean;
   markNotificationAsRead: (notificationId: number) => Promise<void>;
   handleClearAllNotifications: () => Promise<void>;
+  markAllNotificationsAsRead: () => Promise<void>;
 }
 
 export const Header = ({
@@ -22,7 +23,8 @@ export const Header = ({
   userNotifications,
   isNotificationsLoading,
   markNotificationAsRead,
-  handleClearAllNotifications
+  handleClearAllNotifications,
+  markAllNotificationsAsRead
 }: HeaderProps) => {
   return (
     <header className="border-b">
@@ -34,25 +36,6 @@ export const Header = ({
             </Link>
           </div>
           <div className="flex items-center space-x-4">
-            <Sheet>
-              <SheetTrigger asChild>
-                <Button variant="ghost" size="icon" className="h-9 w-9 relative">
-                  <Bell className="h-5 w-5" />
-                  {userNotifications.some(n => !n.read) && (
-                    <span className="absolute top-1 right-1 h-2 w-2 rounded-full bg-primary"></span>
-                  )}
-                </Button>
-              </SheetTrigger>
-              <NotificationsPanel 
-                notifications={userNotifications}
-                isLoading={isNotificationsLoading}
-                onMarkAsRead={markNotificationAsRead}
-                onClearAll={handleClearAllNotifications}
-              />
-            </Sheet>
-            <Button variant="ghost" size="icon" onClick={toggleTheme} className="h-9 w-9">
-              {theme === "light" ? <Moon className="h-5 w-5" /> : <Sun className="h-5 w-5" />}
-            </Button>
             <Button 
               variant="outline" 
               size="sm" 
@@ -69,6 +52,26 @@ export const Header = ({
             >
               <LogOut className="h-5 w-5" />
             </Button>
+            <Button variant="ghost" size="icon" onClick={toggleTheme} className="h-9 w-9">
+              {theme === "light" ? <Moon className="h-5 w-5" /> : <Sun className="h-5 w-5" />}
+            </Button>
+            <Sheet>
+              <SheetTrigger asChild>
+                <Button variant="ghost" size="icon" className="h-9 w-9 relative">
+                  <Bell className="h-5 w-5" />
+                  {userNotifications.some(n => !n.read) && (
+                    <span className="absolute top-1 right-1 h-2 w-2 rounded-full bg-primary"></span>
+                  )}
+                </Button>
+              </SheetTrigger>
+              <NotificationsPanel 
+                notifications={userNotifications}
+                isLoading={isNotificationsLoading}
+                onMarkAsRead={markNotificationAsRead}
+                onClearAll={handleClearAllNotifications}
+                onMarkAllAsRead={markAllNotificationsAsRead}
+              />
+            </Sheet>
           </div>
         </nav>
       </div>
