@@ -16,7 +16,7 @@ import { useUser } from "@/contexts/UserContext";
 interface CardType {
   id: number;
   bank: string;
-  card_name: string;
+  payment_network: string;
   card_type: string;
   last_digits: number;
   expiration_date: string;
@@ -46,7 +46,7 @@ export const MyCards = ({ onCardsChange }: MyCardsProps) => {
   const [cards, setCards] = useState<CardType[]>([]);
   const [newCard, setNewCard] = useState({
     bank: "",
-    card_name: "",
+    payment_network: "",
     card_type: "",
     last_digits: "",
     expiration_date: "",
@@ -87,7 +87,7 @@ export const MyCards = ({ onCardsChange }: MyCardsProps) => {
           ...card,
           id: card.id,
           bank: card.bank || "",
-          card_name: card.card_name || "",
+          payment_network: card.payment_network || "",
           card_type: card.card_type || "",
           expiration_date: card.expiration_date || "",
           last_digits: card.last_digits || 0,
@@ -162,7 +162,7 @@ export const MyCards = ({ onCardsChange }: MyCardsProps) => {
     
     const cardData = {
       bank: newCard.bank,
-      card_name: newCard.card_name,
+      payment_network: newCard.payment_network,
       card_type: newCard.card_type,
       last_digits: parseInt(newCard.last_digits) || null,
       expiration_date: newCard.expiration_date,
@@ -193,7 +193,7 @@ export const MyCards = ({ onCardsChange }: MyCardsProps) => {
         
         setNewCard({
           bank: "",
-          card_name: "",
+          payment_network: "",
           card_type: "",
           last_digits: "",
           expiration_date: "",
@@ -203,11 +203,11 @@ export const MyCards = ({ onCardsChange }: MyCardsProps) => {
         setIsDialogOpen(false);
         
         toast.success("Card added successfully", {
-          description: `${newCardWithId.card_name} has been added to your account.`
+          description: `${newCardWithId.payment_network} has been added to your account.`
         });
         
         // Create notification for added card
-        await createNotification(`Card Added Successfully`, `Your ${newCardWithId.card_name} has been added to your account.`);
+        await createNotification(`Card Added Successfully`, `Your ${newCardWithId.payment_network} has been added to your account.`);
       }
     } catch (error) {
       console.error("Error adding card:", error);
@@ -230,7 +230,7 @@ export const MyCards = ({ onCardsChange }: MyCardsProps) => {
         .from('cards')
         .update({
           bank: editedCard.bank,
-          card_name: editedCard.card_name,
+          payment_network: editedCard.payment_network,
           card_type: editedCard.card_type,
           expiration_date: editedCard.expiration_date,
           status: editedCard.status,
@@ -255,11 +255,11 @@ export const MyCards = ({ onCardsChange }: MyCardsProps) => {
       setIsManageDialogOpen(false);
       
       toast.success("Card updated successfully", {
-        description: `${editedCard.card_name} has been updated.`
+        description: `${editedCard.payment_network} has been updated.`
       });
       
       // Create notification for updated card
-      await createNotification(`Card Updated`, `Your ${editedCard.card_name} has been updated.`);
+      await createNotification(`Card Updated`, `Your ${editedCard.payment_network} has been updated.`);
     } catch (error) {
       console.error("Error updating card:", error);
       toast.error("Failed to update card");
@@ -290,11 +290,11 @@ export const MyCards = ({ onCardsChange }: MyCardsProps) => {
       setIsManageDialogOpen(false);
       
       toast.success("Card removed", {
-        description: `${selectedCard.card_name} has been removed from your account.`
+        description: `${selectedCard.payment_network} has been removed from your account.`
       });
       
       // Create notification for deleted card
-      await createNotification(`Card Removed`, `Your ${selectedCard.card_name} has been removed from your account.`);
+      await createNotification(`Card Removed`, `Your ${selectedCard.payment_network} has been removed from your account.`);
     } catch (error) {
       console.error("Error deleting card:", error);
       toast.error("Failed to delete card");
@@ -398,7 +398,7 @@ export const MyCards = ({ onCardsChange }: MyCardsProps) => {
               </div>
               <div className="mb-2">
                 <p className="text-xs text-white/70">{card.bank}</p>
-                <h3 className="text-xl font-semibold">{card.card_name}</h3>
+                <h3 className="text-xl font-semibold">{card.payment_network}</h3>
               </div>
               <div className="mb-6">
                 <CreditCard className="h-8 w-8 mb-1" />
@@ -500,20 +500,20 @@ export const MyCards = ({ onCardsChange }: MyCardsProps) => {
                 value={newCard.bank}
                 onChange={handleInputChange}
                 className="col-span-3"
-                placeholder="Chase, American Express, etc."
+                placeholder="Ciudad, Nacion, Macro ..."
               />
             </div>
             <div className="grid grid-cols-4 items-center gap-4">
-              <label htmlFor="card_name" className="text-right text-sm font-medium">
-                Card Name
+              <label htmlFor="payment_network" className="text-right text-sm font-medium">
+                Payment Network
               </label>
               <Input
-                id="card_name"
-                name="card_name"
-                value={newCard.card_name}
+                id="payment_network"
+                name="payment_network"
+                value={newCard.payment_network}
                 onChange={handleInputChange}
                 className="col-span-3"
-                placeholder="Sapphire Preferred, Gold Card, etc."
+                placeholder="Visa, Mastercard, Amex ..."
               />
             </div>
             <div className="grid grid-cols-4 items-center gap-4">
@@ -526,7 +526,7 @@ export const MyCards = ({ onCardsChange }: MyCardsProps) => {
                 value={newCard.card_type}
                 onChange={handleInputChange}
                 className="col-span-3"
-                placeholder="Visa, Mastercard, Amex, etc."
+                placeholder="Debito, Credito ..."
               />
             </div>
             <div className="grid grid-cols-4 items-center gap-4">
@@ -584,11 +584,11 @@ export const MyCards = ({ onCardsChange }: MyCardsProps) => {
                 />
               </div>
               <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="edit-card_name" className="text-right">Card Name</Label>
+                <Label htmlFor="edit-payment_network" className="text-right">Card Name</Label>
                 <Input
-                  id="edit-card_name"
-                  name="card_name"
-                  value={editedCard.card_name}
+                  id="edit-payment_network"
+                  name="payment_network"
+                  value={editedCard.payment_network}
                   onChange={handleEditInputChange}
                   className="col-span-3"
                 />
@@ -665,7 +665,7 @@ export const MyCards = ({ onCardsChange }: MyCardsProps) => {
             <DialogTitle>
               {selectedCard?.bank} Offers
               {selectedCard && <span className="ml-2 text-sm font-normal text-muted-foreground">
-                ({selectedCard.card_name})
+                ({selectedCard.payment_network})
               </span>}
             </DialogTitle>
             <DialogDescription>
