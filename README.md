@@ -28,7 +28,9 @@ This project is built with .
 - Tailwind CSS
 
 ## To Do:
-- Check display "Sign in" toast
+- Fix "Sign in" problem
+- Add route for Cards page
+- Add footer pages
 - Add cookies
 
 - Start with the scraping
