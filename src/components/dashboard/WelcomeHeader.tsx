@@ -1,3 +1,4 @@
+
 import { PromoFilters } from "./PromoFilters";
 import { FilterType } from "@/types/dashboard";
 import { Button } from "@/components/ui/button";
@@ -110,4 +111,4 @@ export const WelcomeHeader = ({
       </div>
     </div>
   );
-}; 
+};

@@ -1,3 +1,4 @@
+
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Filter, CreditCard } from "lucide-react";
@@ -9,7 +10,7 @@ interface PromoFiltersProps {
   showOnlyCompatible: boolean;
   categories: string[];
   banks: string[];
-  ageOptions: string[];
+  promotionTypes: string[];
   cardTypes: string[];
   setActiveFilter: (filter: keyof FilterType) => void;
   handleFilterChange: (key: keyof FilterType, value: string) => void;
@@ -24,7 +25,7 @@ export const PromoFilters = ({
   showOnlyCompatible,
   categories,
   banks,
-  ageOptions,
+  promotionTypes,
   cardTypes,
   setActiveFilter,
   handleFilterChange,
@@ -62,12 +63,12 @@ export const PromoFilters = ({
                 Bank
               </Button>
               <Button 
-                variant={activeFilter === "age" ? "default" : "outline"} 
+                variant={activeFilter === "promotionType" ? "default" : "outline"} 
                 size="sm" 
-                onClick={() => setActiveFilter("age")}
+                onClick={() => setActiveFilter("promotionType")}
                 className="text-xs"
               >
-                Age
+                Promotion Type
               </Button>
               <Button 
                 variant={activeFilter === "cardType" ? "default" : "outline"} 
@@ -82,7 +83,7 @@ export const PromoFilters = ({
             <div className="mb-2 font-medium text-xs uppercase text-muted-foreground">
               {activeFilter === "category" ? "Categories" : 
                activeFilter === "bank" ? "Banks" : 
-               activeFilter === "age" ? "Age" : "Card Types"}
+               activeFilter === "promotionType" ? "Promotion Types" : "Card Types"}
             </div>
             
             {activeFilter === "category" && categories.map(category => (
@@ -105,13 +106,13 @@ export const PromoFilters = ({
               </DropdownMenuItem>
             ))}
             
-            {activeFilter === "age" && ageOptions.map(option => (
+            {activeFilter === "promotionType" && promotionTypes.map(type => (
               <DropdownMenuItem 
-                key={option} 
-                onClick={() => handleFilterChange("age", option)}
-                className={filters.age === option ? "bg-primary/10 text-primary" : ""}
+                key={type} 
+                onClick={() => handleFilterChange("promotionType", type)}
+                className={filters.promotionType === type ? "bg-primary/10 text-primary" : ""}
               >
-                {option}
+                {type}
               </DropdownMenuItem>
             ))}
             
@@ -144,4 +145,4 @@ export const PromoFilters = ({
       </Button>
     </div>
   );
-}; 
+};

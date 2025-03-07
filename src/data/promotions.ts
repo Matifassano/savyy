@@ -1,3 +1,4 @@
+
 import { Promotion } from "@/types/dashboard";
 
 export const promotions: Promotion[] = [{
@@ -9,7 +10,11 @@ export const promotions: Promotion[] = [{
   validUntil: "2024-05-01",
   category: "Cashback",
   isNew: true,
-  cardType: "credit"
+  cardType: "credit",
+  expiration_date: "2024-05-01",
+  link_promotion: "https://www.chase.com/promotions/electronics-cashback",
+  isLimitedTime: true,
+  isExclusive: false
 }, {
   id: 2,
   bank: "American Express",
@@ -19,7 +24,11 @@ export const promotions: Promotion[] = [{
   validUntil: "2024-04-15",
   category: "Points",
   isNew: false,
-  cardType: "credit"
+  cardType: "credit",
+  expiration_date: "2024-04-15",
+  link_promotion: "https://www.americanexpress.com/promotions/dining-points",
+  isLimitedTime: true,
+  isExclusive: false
 }, {
   id: 3,
   bank: "Capital One",
@@ -29,7 +38,11 @@ export const promotions: Promotion[] = [{
   validUntil: "2024-06-30",
   category: "Travel",
   isNew: true,
-  cardType: "credit"
+  cardType: "credit",
+  expiration_date: "2024-06-30",
+  link_promotion: "https://www.capitalone.com/promotions/travel-insurance",
+  isLimitedTime: true,
+  isExclusive: true
 }, {
   id: 4,
   bank: "Citibank",
@@ -39,7 +52,11 @@ export const promotions: Promotion[] = [{
   validUntil: "2024-07-15",
   category: "Cashback",
   isNew: false,
-  cardType: "credit"
+  cardType: "credit",
+  expiration_date: "2024-07-15",
+  link_promotion: "https://www.citibank.com/promotions/grocery-cashback",
+  isLimitedTime: true,
+  isExclusive: false
 }, {
   id: 5,
   bank: "Discover",
@@ -49,7 +66,11 @@ export const promotions: Promotion[] = [{
   validUntil: "2024-05-30",
   category: "Points",
   isNew: false,
-  cardType: "credit"
+  cardType: "credit",
+  expiration_date: "2024-05-30",
+  link_promotion: "https://www.discover.com/promotions/gas-points",
+  isLimitedTime: true,
+  isExclusive: false
 }, {
   id: 6,
   bank: "Bank of America",
@@ -59,7 +80,11 @@ export const promotions: Promotion[] = [{
   validUntil: "2024-08-15",
   category: "Cashback",
   isNew: true,
-  cardType: "debit"
+  cardType: "debit",
+  expiration_date: "2024-08-15",
+  link_promotion: "https://www.bankofamerica.com/promotions/online-shopping",
+  isLimitedTime: true,
+  isExclusive: false
 }, {
   id: 7, 
   bank: "Wells Fargo",
@@ -69,7 +94,11 @@ export const promotions: Promotion[] = [{
   validUntil: "2024-07-01",
   category: "Cashback",
   isNew: true,
-  cardType: "debit"
+  cardType: "debit",
+  expiration_date: "2024-07-01",
+  link_promotion: "https://www.wellsfargo.com/promotions/mobile-wallet",
+  isLimitedTime: true,
+  isExclusive: false
 }, {
   id: 8,
   bank: "Chase",
@@ -79,7 +108,11 @@ export const promotions: Promotion[] = [{
   validUntil: "2024-06-15",
   category: "Points",
   isNew: false,
-  cardType: "credit"
+  cardType: "credit",
+  expiration_date: "2024-06-15",
+  link_promotion: "https://www.chase.com/promotions/streaming-rewards",
+  isLimitedTime: false,
+  isExclusive: false
 }, {
   id: 9,
   bank: "American Express",
@@ -89,7 +122,11 @@ export const promotions: Promotion[] = [{
   validUntil: "2024-09-30",
   category: "Travel",
   isNew: true,
-  cardType: "credit"
+  cardType: "credit",
+  expiration_date: "2024-09-30",
+  link_promotion: "https://www.americanexpress.com/promotions/hotel-credit",
+  isLimitedTime: false,
+  isExclusive: true
 }, {
   id: 10,
   bank: "Discover",
@@ -99,5 +136,9 @@ export const promotions: Promotion[] = [{
   validUntil: "2024-08-31",
   category: "Cashback",
   isNew: false,
-  cardType: "debit"
-}]; 
+  cardType: "debit",
+  expiration_date: "2024-08-31",
+  link_promotion: "https://www.discover.com/promotions/debit-rewards",
+  isLimitedTime: false,
+  isExclusive: false
+}];
