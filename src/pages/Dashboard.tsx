@@ -1,20 +1,19 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { Bot } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useUser } from "@/contexts/UserContext";
 import { Footer } from "./Login";
+import { useNavigate } from "react-router-dom";
 import { 
   Header, 
   WelcomeHeader, 
   PromotionCarousel, 
   ZenyChat,
-  ConnectedApps,
-  MyCardsSection
+  ConnectedApps
 } from "@/components/dashboard";
 import { Notification, FilterType, ConnectedApp, Promotion } from "@/types/dashboard";
 import { getAvailableBanksFromCards, getBankId } from "@/utils/promotions";
-import { useNavigate } from "react-router-dom";
 
 // promotions data 
 import { promotions } from "@/data/promotions";
@@ -50,7 +49,6 @@ const Dashboard = () => {
   });
   const [activeFilter, setActiveFilter] = useState<keyof FilterType>("category");
   const [theme, setTheme] = useState<"light" | "dark">("light");
-  const [showCards, setShowCards] = useState(false);
   const [availableBanks, setAvailableBanks] = useState<string[]>([]);
   const [showOnlyCompatible, setShowOnlyCompatible] = useState(true);
   const [userNotifications, setUserNotifications] = useState<Notification[]>([]);
@@ -67,8 +65,7 @@ const Dashboard = () => {
     }
     
     import("@/components/my-cards").then((module) => {
-      const banks = getAvailableBanksFromCards([]);
-      setAvailableBanks(banks);
+      loadUserCards();
     }).catch(error => {
       console.error("Error importing my-cards:", error);
     });
@@ -78,7 +75,33 @@ const Dashboard = () => {
     }
   }, [user]);
 
-  // Add effect to handle showOnlyCompatible when no banks are available
+  const loadUserCards = async () => {
+    if (!user) return;
+    
+    try {
+      const { data, error } = await supabase
+        .from('cards')
+        .select('*')
+        .eq('user', user.id);
+        
+      if (error) {
+        throw error;
+      }
+      
+      if (data) {
+        const banks = getAvailableBanksFromCards(data);
+        setAvailableBanks(banks);
+      }
+    } catch (error) {
+      console.error("Error loading user cards:", error);
+      toast({
+        title: "Error",
+        description: "Could not load your cards",
+        variant: "destructive"
+      });
+    }
+  };
+
   useEffect(() => {
     if (showOnlyCompatible && availableBanks.length === 0) {
       toast({
@@ -88,7 +111,7 @@ const Dashboard = () => {
       });
       setShowOnlyCompatible(false);
     }
-  }, [showOnlyCompatible, availableBanks]);
+  }, [showOnlyCompatible, availableBanks, toast]);
 
   const fetchNotifications = async () => {
     if (!user) return;
@@ -303,11 +326,6 @@ const Dashboard = () => {
     setShowOnlyCompatible(false);
   };
 
-  const handleCardsChange = (cards: any[]) => {
-    const banks = getAvailableBanksFromCards(cards);
-    setAvailableBanks(banks);
-  };
-
   const handleLogout = async () => {
     await signOut();
     navigate("/");
@@ -327,12 +345,7 @@ const Dashboard = () => {
       />
 
       <main className="flex-1 container mx-auto py-6 px-4 sm:py-8 sm:px-6">
-        {showCards ? (
-          <MyCardsSection 
-            onBack={() => setShowCards(false)}
-            onCardsChange={handleCardsChange}
-          />
-        ) : showConnectedApps ? (
+        {showConnectedApps ? (
           <ConnectedApps 
             apps={connectedAppsList}
             onToggleConnection={toggleAppConnection}
@@ -352,7 +365,6 @@ const Dashboard = () => {
               handleFilterChange={handleFilterChange}
               setShowOnlyCompatible={setShowOnlyCompatible}
               getFilterDisplayText={getFilterDisplayText}
-              setShowCards={setShowCards}
             />
 
             <div className="relative py-4 sm:py-6">

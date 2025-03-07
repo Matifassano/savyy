@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
+import { useNavigate } from "react-router-dom";
 
 interface WelcomeHeaderProps {
   filters: FilterType;
@@ -18,7 +19,6 @@ interface WelcomeHeaderProps {
   handleFilterChange: (key: keyof FilterType, value: string) => void;
   setShowOnlyCompatible: (show: boolean) => void;
   getFilterDisplayText: () => string;
-  setShowCards: (show: boolean) => void;
 }
 
 export const WelcomeHeader = ({
@@ -33,8 +33,9 @@ export const WelcomeHeader = ({
   handleFilterChange,
   setShowOnlyCompatible,
   getFilterDisplayText,
-  setShowCards
 }: WelcomeHeaderProps) => {
+  const navigate = useNavigate();
+  
   return (
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
@@ -42,7 +43,7 @@ export const WelcomeHeader = ({
           <h1 className="text-2xl font-bold">Welcome back!</h1>
           <p className="text-muted-foreground">Discover the best promotions for your cards</p>
         </div>
-        <Button variant="outline" onClick={() => setShowCards(true)}>
+        <Button variant="outline" onClick={() => navigate("/manage-cards")}>
           Manage Cards
         </Button>
       </div>
