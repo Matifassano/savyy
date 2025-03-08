@@ -25,27 +25,18 @@ const Login = () => {
     try {
       setIsAuthenticating(true);
       
-      // Get the full origin for the redirect URL
-      const currentOrigin = window.location.origin;
-      const redirectUrl = `${currentOrigin}/dashboard`;
-      
-      console.log("Attempting Google sign in with redirect URL:", redirectUrl);
-      
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: redirectUrl,
+          redirectTo: `${window.location.origin}/auth/callback`,
           queryParams: {
-            access_type: 'offline', // Request a refresh token
-            prompt: 'select_account' // Force account selection even if the user is already signed in
+            access_type: 'offline',
+            prompt: 'select_account'
           }
         }
       });
 
-      if (error) {
-        console.error("Google sign in error:", error);
-        throw error;
-      }
+      if (error) throw error;
     } catch (error: any) {
       console.error("Authentication error:", error);
       toast({
@@ -53,6 +44,7 @@ const Login = () => {
         description: error.message || "Failed to sign in with Google",
         variant: "destructive",
       });
+    } finally {
       setIsAuthenticating(false);
     }
   };
