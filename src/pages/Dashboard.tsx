@@ -6,7 +6,6 @@ import { useUser } from "@/contexts/UserContext";
 import { Footer } from "./Login";
 import { useNavigate } from "react-router-dom";
 import { 
-  Header, 
   WelcomeHeader, 
   PromotionCarousel, 
   ZenyChat,
@@ -15,8 +14,9 @@ import {
 import { Notification, FilterType, ConnectedApp, Promotion } from "@/types/dashboard";
 import { getAvailableBanksFromCards, getBankId } from "@/utils/promotions";
 
-// promotions data 
+// promotions and Header data 
 import { promotions } from "@/data/promotions";
+import { Header } from "@/components/dashboard/Header";
 
 // Constants moved from Dashboard to separate constants
 const uniqueCategories = Array.from(new Set(promotions.map(promo => promo.category)));

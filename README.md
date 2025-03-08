@@ -28,9 +28,10 @@ This project is built with .
 - Tailwind CSS
 
 ## To Do:
+- Fix cards available toast
 - Add footer pages
 
-- Start with the scraping
+- Start with the scraping -> Change promotions object and change the category filter options
 - Delete promotions example
 - Create the RAG Chatbot "Savy"
 - Add the Zeny UI

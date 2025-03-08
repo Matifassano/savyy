@@ -54,8 +54,7 @@ const Index = () => {
         "Add up to 5 cards",
         "15 chat messages per week",
         "Priority email support",
-        "10 Promotions per card",
-        "Support Zeny connection"
+        "10 Promotions per card"
       ],
       cta: "Go Premium",
       popular: true
@@ -81,7 +80,9 @@ const Index = () => {
     <div className="min-h-screen flex flex-col">
       <header className="container mx-auto py-4 px-4 sm:py-6 sm:px-6">
         <nav className="flex justify-between items-center">
-          <div className="text-xl sm:text-2xl font-bold text-primary">Savy</div>
+            <Link to="/" className="text-2xl font-bold text-primary">
+              Savy
+            </Link>
           <div className="flex items-center gap-2 sm:gap-4">
             <Button variant="ghost" size="icon" onClick={toggleTheme}>
               {theme === "light" ? (
@@ -92,7 +93,7 @@ const Index = () => {
             </Button>
             {user ? (
               <Button size="sm" className="text-xs sm:text-sm" asChild>
-                <Link to="/dashboard">Go to Dashboard</Link>
+                <Link to="/dashboard">Dashboard</Link>
               </Button>
             ) : (
               <Button size="sm" className="text-xs sm:text-sm" asChild>

@@ -48,6 +48,11 @@
     --input: 240 3.7% 15.9%;
     --ring: 240 4.9% 83.9%;
   }
+  @media (prefers-color-scheme: dark) {
+    * {
+        scrollbar-color: #555 #000; /* Dark mode for Firefox */
+    }
+}
 
   * {
     @apply border-border;
