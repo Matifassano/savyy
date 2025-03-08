@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -11,7 +10,9 @@ import Login from "./pages/Login";
 import NotFound from "./pages/NotFound";
 import ManageCards from "./pages/ManageCards";
 import ProtectedRoute from "./components/ProtectedRoute";
-
+import PrivacyPolicy from "./pages/PrivacyPolicy";
+import TermsOfService from "./pages/TermsOfService";
+import AuthCallback from "./components/AuthCallback";
 // Create a single QueryClient instance for the entire app
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -34,6 +35,9 @@ const App = () => (
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/login" element={<Login />} />
+            <Route path="/auth/callback" element={<AuthCallback />} />
+            <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+            <Route path="/terms-of-service" element={<TermsOfService />} />
             <Route 
               path="/dashboard" 
               element={

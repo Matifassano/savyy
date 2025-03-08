@@ -28,8 +28,7 @@ This project is built with .
 - Tailwind CSS
 
 ## To Do:
-- Fix cards available toast
-- Add footer pages
+- Create custom domain 
 
 - Start with the scraping -> Change promotions object and change the category filter options
 - Delete promotions example

@@ -142,9 +142,9 @@ export const Footer = () => (
         © {new Date().getFullYear()} Savy. All rights reserved.
       </div>
       <div className="flex gap-6">
-        <a href="#" className="text-sm text-muted-foreground hover:text-primary">Privacy Policy</a>
-        <a href="#" className="text-sm text-muted-foreground hover:text-primary">Terms of Service</a>
-        <a href="#" className="text-sm text-muted-foreground hover:text-primary">Contact</a>
+        <Link to="/privacy-policy" className="text-sm text-muted-foreground hover:text-primary">Privacy Policy</Link>
+        <Link to="/terms-of-service" className="text-sm text-muted-foreground hover:text-primary">Terms of Service</Link>
+        <a href="mailto:support@savyapp.com" className="text-sm text-muted-foreground hover:text-primary">Contact</a>
       </div>
     </div>
   </footer>
