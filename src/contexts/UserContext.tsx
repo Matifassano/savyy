@@ -1,5 +1,4 @@
-
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useState, useMemo } from "react";
 import { Session, User } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
@@ -20,76 +19,56 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
   const { toast } = useToast();
 
   useEffect(() => {
-    // Get initial session
+    const cachedSession = localStorage.getItem('supabase.session');
+    if (cachedSession) {
+      const parsedSession = JSON.parse(cachedSession);
+      setSession(parsedSession);
+      setUser(parsedSession.user);
+    }
+
     const getInitialSession = async () => {
-      try {
-        const { data, error } = await supabase.auth.getSession();
-        
-        if (error) {
-          console.error("Error getting initial session:", error);
-          throw error;
-        }
-        
-        console.log("Initial session data:", data.session ? "Session exists" : "No session");
-        if (data.session) {
-          console.log("User email:", data.session.user.email);
-          console.log("Session expires at:", new Date(data.session.expires_at! * 1000).toLocaleString());
-        }
-        
+      const { data, error } = await supabase.auth.getSession();
+      if (data.session) {
         setSession(data.session);
-        setUser(data.session?.user ?? null);
-      } catch (error) {
-        console.error("Error getting initial session:", error);
+        setUser(data.session.user);
+        localStorage.setItem('supabase.session', JSON.stringify(data.session));
+      } else if (error) {
         toast({
           title: "Authentication Error",
           description: "There was a problem connecting to your account.",
           variant: "destructive",
         });
-      } finally {
-        setIsLoading(false);
       }
+      setIsLoading(false);
     };
 
     getInitialSession();
 
-    // Set up visibility change listener to refresh session when tab becomes visible again
     const handleVisibilityChange = async () => {
       if (document.visibilityState === 'visible') {
-        console.log("Tab became visible, refreshing session");
         const { data } = await supabase.auth.getSession();
         if (data.session) {
           setSession(data.session);
           setUser(data.session.user);
+          localStorage.setItem('supabase.session', JSON.stringify(data.session));
         }
       }
     };
 
     document.addEventListener('visibilitychange', handleVisibilityChange);
 
-    // Listen for auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (event, currentSession) => {
-        console.log("Auth state change:", event);
-        
-        if (event === 'SIGNED_IN') {
-          console.log("User signed in:", currentSession?.user.email);
-          toast({
-            title: "Signed in",
-            description: `Welcome ${currentSession?.user.email}!`,
-          });
-        } else if (event === 'SIGNED_OUT') {
-          console.log("User signed out");
-        } else if (event === 'TOKEN_REFRESHED') {
-          console.log("Token refreshed");
-        } else if (event === 'USER_UPDATED') {
-          console.log("User updated");
-        }
-        
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, currentSession) => {
+      if (event === 'SIGNED_IN' || event === 'SIGNED_OUT') {
         setSession(currentSession);
         setUser(currentSession?.user ?? null);
-        setIsLoading(false);
+        if (currentSession) {
+          localStorage.setItem('supabase.session', JSON.stringify(currentSession));
+        } else {
+          localStorage.removeItem('supabase.session');
+        }
       }
-    );
+      setIsLoading(false);
+    });
 
     return () => {
       subscription.unsubscribe();
@@ -98,28 +77,20 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
   }, [toast]);
 
   const signOut = async () => {
-    try {
-      await supabase.auth.signOut();
-      toast({
-        title: "Signed out",
-        description: "You have been successfully signed out.",
-      });
-    } catch (error) {
-      console.error("Error signing out:", error);
-      toast({
-        title: "Sign out failed",
-        description: "There was a problem signing you out.",
-        variant: "destructive",
-      });
-    }
+    await supabase.auth.signOut();
+    localStorage.removeItem('supabase.session');
+    toast({
+      title: "Signed out",
+      description: "You have been successfully signed out.",
+    });
   };
 
-  const value = {
+  const value = useMemo(() => ({
     user,
     session,
     isLoading,
     signOut,
-  };
+  }), [user, session, isLoading]);
 
   return <UserContext.Provider value={value}>{children}</UserContext.Provider>;
 }

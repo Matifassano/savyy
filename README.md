@@ -29,7 +29,6 @@ This project is built with .
 
 ## To Do:
 - Fix "Sign in" problem
-- Add route for Cards page
 - Add footer pages
 - Add cookies
 
