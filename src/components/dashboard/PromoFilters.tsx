@@ -1,4 +1,3 @@
-
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Filter, CreditCard } from "lucide-react";
@@ -106,7 +105,7 @@ export const PromoFilters = ({
               </DropdownMenuItem>
             ))}
             
-            {activeFilter === "promotionType" && promotionTypes.map(type => (
+            {activeFilter === "promotionType" && ["All Promotions", "Discounts", "Cashback", "No-Interest Payment"].map(type => (
               <DropdownMenuItem 
                 key={type} 
                 onClick={() => handleFilterChange("promotionType", type)}

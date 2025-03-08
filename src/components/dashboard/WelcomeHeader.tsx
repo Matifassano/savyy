@@ -1,4 +1,3 @@
-
 import { memo } from "react";
 import { FilterType } from "@/types/dashboard";
 import { Button } from "@/components/ui/button";
@@ -85,7 +84,7 @@ export const WelcomeHeader = memo(({
                   {bank}
                 </SelectItem>
               ))}
-              {activeFilter === "promotionType" && promotionTypes.map((type) => (
+              {activeFilter === "promotionType" && ["All Promotions", "Discounts", "Cashback", "No-Interest Payment"].map((type) => (
                 <SelectItem key={type} value={type}>
                   {type}
                 </SelectItem>
