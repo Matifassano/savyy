@@ -1,5 +1,5 @@
 
-import { useEffect } from "react";
+import { useEffect, useCallback } from "react";
 import { MyCards } from "@/components/my-cards";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -17,10 +17,11 @@ const ManageCards = () => {
     }
   }, [user, isLoading, navigate]);
 
-  const handleCardsChange = (cards: any[]) => {
+  // Memoize callback to prevent unnecessary rerenders
+  const handleCardsChange = useCallback((cards: any[]) => {
     // This function will be called when cards are updated
     console.log("Cards updated:", cards);
-  };
+  }, []);
 
   return (
     <div className="min-h-screen bg-background flex flex-col">

@@ -1,5 +1,5 @@
 
-import { PromoFilters } from "./PromoFilters";
+import { memo } from "react";
 import { FilterType } from "@/types/dashboard";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -21,7 +21,7 @@ interface WelcomeHeaderProps {
   getFilterDisplayText: () => string;
 }
 
-export const WelcomeHeader = ({
+export const WelcomeHeader = memo(({
   filters,
   activeFilter,
   showOnlyCompatible,
@@ -112,4 +112,6 @@ export const WelcomeHeader = ({
       </div>
     </div>
   );
-};
+});
+
+WelcomeHeader.displayName = "WelcomeHeader";

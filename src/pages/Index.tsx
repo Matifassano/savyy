@@ -4,29 +4,14 @@ import { Link } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { BadgeCheck, CreditCard, Bell, Moon, Sun, Check } from "lucide-react";
 import { Footer } from "./Login";
-import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { useUser } from "@/contexts/UserContext";
+import { useTheme } from "@/hooks/use-theme";
 
 const Index = () => {
   const { toast } = useToast();
-  const [theme, setTheme] = useState<"light" | "dark">("light");
+  const { theme, toggleTheme } = useTheme();
   const { user } = useUser();
-
-  useEffect(() => {
-    const savedTheme = localStorage.getItem("theme") as "light" | "dark" | null;
-    if (savedTheme) {
-      setTheme(savedTheme);
-      document.documentElement.classList.toggle("dark", savedTheme === "dark");
-    }
-  }, []);
-
-  const toggleTheme = () => {
-    const newTheme = theme === "light" ? "dark" : "light";
-    setTheme(newTheme);
-    localStorage.setItem("theme", newTheme);
-    document.documentElement.classList.toggle("dark", newTheme === "dark");
-  };
 
   const features = [
     {
