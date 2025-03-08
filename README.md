@@ -28,11 +28,9 @@ This project is built with .
 - Tailwind CSS
 
 ## To Do:
-- Fix "Sign in" problem
 - Add footer pages
-- Add cookies
 
 - Start with the scraping
 - Delete promotions example
-- Start with the intelligent alerts
+- Create the RAG Chatbot "Savy"
 - Add the Zeny UI
