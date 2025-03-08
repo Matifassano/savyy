@@ -44,7 +44,6 @@ const Login = () => {
         description: error.message || "Failed to sign in with Google",
         variant: "destructive",
       });
-    } finally {
       setIsAuthenticating(false);
     }
   };
