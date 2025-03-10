@@ -28,7 +28,8 @@ This project is built with .
 - Tailwind CSS
 
 ## To Do:
-- Create custom domain 
+- Fix "show only compatible cards" button
+- Create custom email domain
 
 - Start with the scraping -> Change promotions object and change the category filter options
 - Delete promotions example
