@@ -20,7 +20,7 @@ export const promotions: Promotion[] = [
     id: 2,
     bank: "Ciudad",
     bank_id: "ciudad",
-    title: "20% de descuento en cine",
+    title: "20% de descuento en cines",
     description: "Disfruta de un 20% de descuento en entradas de cine pagando con tu tarjeta Ciudad.",
     validUntil: "2025/12/31",
     category: "Entretenimiento",
