@@ -1,154 +1,44 @@
 import { Promotion } from "@/types/dashboard";
+import { supabase } from "@/integrations/supabase/client";
 
-export const promotions: Promotion[] = [
-  {
-    id: 1,
-    bank: "Ciudad",
-    bank_id: "ciudad",
-    title: "30% de descuento en restaurantes",
-    description: "Obtén un 30% de descuento en restaurantes seleccionados pagando con tu tarjeta Ciudad.",
-    validUntil: "2025/12/31",
-    category: "Gastronomía",
-    isNew: true,
-    cardType: "Visa",
-    expiration_date: "2025/12/31",
-    link_promotion: "https://www.bancociudad.com.ar/beneficios/promo?pagina=1",
-    isLimitedTime: true,
-    isExclusive: false
-  },
-  {
-    id: 2,
-    bank: "Ciudad",
-    bank_id: "ciudad",
-    title: "20% de descuento en cines",
-    description: "Disfruta de un 20% de descuento en entradas de cine pagando con tu tarjeta Ciudad.",
-    validUntil: "2025/12/31",
-    category: "Entretenimiento",
-    isNew: false,
-    cardType: "Mastercard",
-    expiration_date: "2025/12/31",
-    link_promotion: "https://www.bancociudad.com.ar/beneficios/promo?pagina=1",
-    isLimitedTime: true,
-    isExclusive: false
-  },
-  {
-    id: 3,
-    bank: "BBVA",
-    bank_id: "bbva",
-    title: "40% de descuento en supermercados",
-    description: "Aprovecha un 40% de descuento en supermercados seleccionados pagando con tu tarjeta BBVA.",
-    validUntil: "2025/12/31",
-    category: "Supermercados",
-    isNew: true,
-    cardType: "Visa",
-    expiration_date: "2025/12/31",
-    link_promotion: "https://go.bbva.com.ar/fgo/web_beneficios/beneficios",
-    isLimitedTime: false,
-    isExclusive: true
-  },
-  {
-    id: 4,
-    bank: "Galicia",
-    bank_id: "galicia",
-    title: "25% de descuento en farmacias",
-    description: "Obtén un 25% de descuento en farmacias pagando con tu tarjeta Galicia.",
-    validUntil: "2025/12/31",
-    category: "Salud",
-    isNew: false,
-    cardType: "Mastercard",
-    expiration_date: "2025/12/31",
-    link_promotion: "https://www.galicia.ar/personas/buscador-de-promociones",
-    isLimitedTime: true,
-    isExclusive: false
-  },
-  {
-    id: 5,
-    bank: "Nacion",
-    bank_id: "nacion",
-    title: "35% de descuento en indumentaria",
-    description: "Disfruta de un 35% de descuento en tiendas de ropa seleccionadas pagando con tu tarjeta Nacion.",
-    validUntil: "2025/12/31",
-    category: "Indumentaria",
-    isNew: true,
-    cardType: "Visa",
-    expiration_date: "2025/12/31",
-    link_promotion: "https://semananacion.com.ar/buscador",
-    isLimitedTime: false,
-    isExclusive: true
-  },
-  {
-    id: 6,
-    bank: "Ciudad",
-    bank_id: "ciudad",
-    title: "15% de descuento en hoteles",
-    description: "Obtén un 15% de descuento en hoteles seleccionados pagando con tu tarjeta Ciudad.",
-    validUntil: "2025/12/31",
-    category: "Viajes",
-    isNew: false,
-    cardType: "American Express",
-    expiration_date: "2025/12/31",
-    link_promotion: "https://www.bancociudad.com.ar/beneficios/promo?pagina=1",
-    isLimitedTime: true,
-    isExclusive: false
-  },
-  {
-    id: 7,
-    bank: "BBVA",
-    bank_id: "bbva",
-    title: "50% de descuento en combustible",
-    description: "Aprovecha un 50% de descuento en combustible los días jueves pagando con tu tarjeta BBVA.",
-    validUntil: "2025/12/31",
-    category: "Combustible",
-    isNew: true,
-    cardType: "Visa",
-    expiration_date: "2025/12/31",
-    link_promotion: "https://go.bbva.com.ar/fgo/web_beneficios/beneficios",
-    isLimitedTime: true,
-    isExclusive: true
-  },
-  {
-    id: 8,
-    bank: "Galicia",
-    bank_id: "galicia",
-    title: "30% de descuento en electrónica",
-    description: "Disfruta de un 30% de descuento en productos electrónicos pagando con tu tarjeta Galicia.",
-    validUntil: "2025/12/31",
-    category: "Tecnología",
-    isNew: false,
-    cardType: "Mastercard",
-    expiration_date: "2025/12/31",
-    link_promotion: "https://www.galicia.ar/personas/buscador-de-promociones",
-    isLimitedTime: false,
-    isExclusive: false
-  },
-  {
-    id: 9,
-    bank: "Nacion",
-    bank_id: "nacion",
-    title: "20% de descuento en librerías",
-    description: "Obtén un 20% de descuento en librerías seleccionadas pagando con tu tarjeta Nacion.",
-    validUntil: "2025/12/31",
-    category: "Educación",
-    isNew: true,
-    cardType: "Visa",
-    expiration_date: "2025/12/31",
-    link_promotion: "https://semananacion.com.ar/buscador",
-    isLimitedTime: true,
-    isExclusive: false
-  },
-  {
-    id: 10,
-    bank: "Ciudad",
-    bank_id: "ciudad",
-    title: "40% de descuento en perfumerías",
-    description: "Aprovecha un 40% de descuento en perfumerías seleccionadas pagando con tu tarjeta Ciudad.",
-    validUntil: "2025/12/31",
-    category: "Belleza",
-    isNew: false,
-    cardType: "American Express",
-    expiration_date: "2025/12/31",
-    link_promotion: "https://www.bancociudad.com.ar/beneficios/promo?pagina=1",
-    isLimitedTime: false,
-    isExclusive: true
+// Function to fetch promotions from Supabase
+export async function fetchPromotionsFromSupabase(): Promise<Promotion[]> {
+  try {
+    const { data, error } = await supabase
+      .from('promotions')
+      .select('*')
+      .order('created_at', { ascending: false });
+    
+    if (error) {
+      console.error('Error fetching promotions:', error);
+      return [];
+    }
+    
+    // Transform data to match Promotion type
+    return data.map((promo: any, index: number) => ({
+      id: promo.id || index + 1,
+      bank: promo.bank || '',
+      title: promo.title || '',
+      benefits: promo.benefits || '',
+      cardtype: promo.cardtype || '',
+      link_promotion: promo.link_promotion || '',
+      payment_network: promo.payment_network || '',
+      valid_until: promo.valid_until || ''
+    }));
+  } catch (error) {
+    console.error('Error in fetchPromotionsFromSupabase:', error);
+    return [];
   }
-];
+}
+
+// Default empty array for promotions
+export const promotions: Promotion[] = [];
+
+// Initialize promotions on the client side
+if (typeof window !== 'undefined') {
+  fetchPromotionsFromSupabase().then(data => {
+    // Update the promotions array with fetched data
+    promotions.length = 0;
+    promotions.push(...data);
+  });
+}

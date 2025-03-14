@@ -11,17 +11,12 @@ export interface Notification {
 export interface Promotion {
   id: number;
   bank: string;
-  bank_id: string;
   title: string;
-  description: string;
-  validUntil: string;
-  category: string;
-  isNew: boolean;
-  cardType: string;
-  expiration_date: string;
+  benefits: string;
+  valid_until: string;
+  cardtype: string;
+  payment_network: string;
   link_promotion: string;
-  isLimitedTime: boolean;
-  isExclusive: boolean;
 }
 
 export interface ConnectedApp {

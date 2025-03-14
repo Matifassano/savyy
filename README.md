@@ -31,7 +31,7 @@ This project is built with .
 
 - Start with the scraping 
 - Check Banco Ciudad Benefits scraper
-
+- Check .env keys in promotions file
 
 - Show the promotions
 - Delete promotions example

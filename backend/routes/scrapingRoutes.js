@@ -1,7 +1,9 @@
 const express = require("express");
+const supabase = require("../supabase");
 const { scrapeAllBanks } = require("../scraping/scraper");
 
 const router = express.Router();
+
 
 let cachedData = null;
 let lastScrapingTime = null;
@@ -23,18 +25,26 @@ async function fetchAndCacheScraping() {
 }
 
 // Route to get the cached scraping data
-router.get("/scrape", async (req, res) => {
-  if (cachedData) {
-    res.json({
-      data: cachedData,
-      lastUpdated: lastScrapingTime,
-      status: isScrapingInProgress ? "updating" : "ready"
-    });
-  } else {
-    res.json({ 
-      message: "Scraping in process or not available", 
-      status: isScrapingInProgress ? "in_progress" : "not_started" 
-    });
+router.get('/scrape', async (req, res) => {
+  try {
+      // Obtener los datos de Supabase
+      const { data, error } = await supabase.from('promotions').select('*').order('created_at', { ascending: false });
+
+      if (error) {
+          console.error('Error obteniendo datos de Supabase:', error);
+          return res.status(500).json({ success: false, message: 'Error obteniendo datos' });
+      }
+
+      if (data.length === 0) {
+          console.log('Base de datos vacía, ejecutando scraping...');
+          const scrapedData = await fetchAndCacheScraping();
+          return res.json({ success: true, data: scrapedData });
+      }
+
+      res.json({ success: true, data });
+  } catch (error) {
+      console.error('Error en la API:', error);
+      res.status(500).json({ success: false, message: 'Error interno del servidor' });
   }
 });
 

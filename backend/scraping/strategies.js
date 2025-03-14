@@ -14,12 +14,12 @@ async function scrapeBancoCiudad(page) {
     console.log("Banco Ciudad HTML structure sample:", htmlStructure);
     
     // Extract all promotions
-    const promociones = await page.$$eval('.card-body', (cards) => {
+    const benefits = await page.$$eval('.card-body', (cards) => {
       return cards.map(card => {
         // Log the structure of each card for debugging
         console.log("Processing card:", card.outerHTML);
         
-        const titulo = card.querySelector('.card-title')?.innerText?.trim() || 'Sin título';
+        const title = card.querySelector('.card-title')?.innerText?.trim() || 'Sin título';
         // Get the discount element
         const descuentoElement = card.querySelector('.min-height-texto p.card-text.card-title-descuento');
         // Get the installment element - make sure we're getting the correct element for cuotas
@@ -75,18 +75,18 @@ async function scrapeBancoCiudad(page) {
         }
         
         return {
-          titulo,
-          texto_descuentos: texto_descuentos.join(', '),
-          redes_pago,
-          dias_validos
+          title,
+          benefits: texto_descuentos.join(', '),
+          payment_network: redes_pago,
+          valid_until: dias_validos
         };
       });
     });
     
-    return { title, promociones };
+    return { title, benefits };
   } catch (error) {
     console.error("Error scraping Banco Ciudad:", error);
-    return { title, promociones: [], error: error.message };
+    return { title, benefits: [], error: error.message };
   }
 }
   

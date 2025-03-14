@@ -1,0 +1,7 @@
+ALTER TABLE IF EXISTS public.promotions
+ DROP COLUMN IF EXISTS description,
+ DROP COLUMN IF EXISTS expiration_date,
+ DROP COLUMN IF EXISTS validuntil,
+ DROP COLUMN IF EXISTS category,
+ ADD COLUMN IF NOT EXISTS benefits TEXT,
+ ADD COLUMN IF NOT EXISTS valid_until TEXT;
