@@ -32,7 +32,7 @@ router.get("/scrape", async (req, res) => {
     });
   } else {
     res.json({ 
-      message: "Scraping en proceso o no disponible", 
+      message: "Scraping in process or not available", 
       status: isScrapingInProgress ? "in_progress" : "not_started" 
     });
   }
@@ -42,7 +42,7 @@ router.get("/scrape", async (req, res) => {
 router.post("/scrape/refresh", async (req, res) => {
   if (isScrapingInProgress) {
     return res.status(409).json({ 
-      message: "Ya hay un proceso de scraping en curso", 
+      message: "There is already a scraping process in progress", 
       lastUpdated: lastScrapingTime 
     });
   }
@@ -50,7 +50,7 @@ router.post("/scrape/refresh", async (req, res) => {
   try {
     isScrapingInProgress = true;
     res.json({ 
-      message: "Proceso de scraping iniciado", 
+      message: "Scraping process started", 
       lastUpdated: lastScrapingTime 
     });
     
