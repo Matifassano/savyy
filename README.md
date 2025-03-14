@@ -27,11 +27,17 @@ This project is built with .
 - shadcn-ui
 - Tailwind CSS
 
-## To Do:
-- Fix "show only compatible cards" button
-- Create custom email domain
+## To Do MVP:
 
-- Start with the scraping -> Change promotions object and change the category filter options
+- Start with the scraping 
+- Check Banco Ciudad Benefits scraper
+
+
+- Show the promotions
 - Delete promotions example
 - Create the RAG Chatbot "Savy"
+
+## After MVP:
+- Add other banks promotions
+- Add other banks cards
 - Add the Zeny UI
