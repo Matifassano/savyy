@@ -22,7 +22,7 @@ const AuthCallback = () => {
         }
       } catch (error) {
         console.error('Error handling auth callback:', error);
-        navigate('/login', { replace: true });
+        navigate('*', { replace: true });
       }
     };
 
