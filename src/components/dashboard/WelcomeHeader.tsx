@@ -12,7 +12,6 @@ interface WelcomeHeaderProps {
   showOnlyCompatible: boolean;
   categories: string[];
   banks: string[];
-  promotionTypes: string[];
   cardTypes: string[];
   setActiveFilter: (filter: keyof FilterType) => void;
   handleFilterChange: (key: keyof FilterType, value: string) => void;
@@ -26,7 +25,6 @@ export const WelcomeHeader = memo(({
   showOnlyCompatible,
   categories,
   banks,
-  promotionTypes,
   cardTypes,
   setActiveFilter,
   handleFilterChange,

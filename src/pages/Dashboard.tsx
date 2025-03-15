@@ -19,14 +19,13 @@ import { promotions } from "@/data/promotions";
 import { Header } from "@/components/dashboard/Header";
 
 // Constants moved from Dashboard to separate constants
-const uniqueCategories = Array.from(new Set(promotions.map(promo => promo.category)));
-const categories = ["All Categories", ...uniqueCategories];
+const categories = ["All Categories"];
 
-const uniqueBanks = Array.from(new Set(promotions.map(promo => promo.bank)));
-const banks = ["All Banks", ...uniqueBanks];
+// Update the banks array to include banks from both promotions and user cards
+const uniquePromotionBanks = Array.from(new Set(promotions.map(promo => promo.bank)));
+const banks = ["All Banks"];
 
 const cardTypes = ["All Cards", "Credit Cards", "Debit Cards"];
-const promotionTypes = ["All Promotions", "New This Week", "Limited Time", "Exclusive"];
 
 const initialConnectedApps: ConnectedApp[] = [
   { 
@@ -56,6 +55,8 @@ const Dashboard = () => {
   const [showConnectedApps, setShowConnectedApps] = useState(false);
   const { toast } = useToast();
   const [isNotificationsLoading, setIsNotificationsLoading] = useState(false);
+  // Add state for all available banks (from promotions and user cards)
+  const [allBanks, setAllBanks] = useState<string[]>(["All Banks", ...uniquePromotionBanks]);
 
   useEffect(() => {
     const savedTheme = localStorage.getItem("theme") as "light" | "dark" | null;
@@ -91,6 +92,10 @@ const Dashboard = () => {
       if (data) {
         const banks = getAvailableBanksFromCards(data);
         setAvailableBanks(banks);
+        
+        // Update allBanks to include both promotion banks and user card banks
+        const allAvailableBanks = Array.from(new Set([...uniquePromotionBanks, ...banks]));
+        setAllBanks(["All Banks", ...allAvailableBanks]);
       }
     } catch (error) {
       console.error("Error loading user cards:", error);
@@ -249,31 +254,13 @@ const Dashboard = () => {
       return false;
     }
     
-    if (filters.category !== "All Categories" && promo.category !== filters.category) {
-      return false;
-    }
-    
     if (filters.bank !== "All Banks" && promo.bank !== filters.bank) {
       return false;
     }
     
-    if (filters.promotionType !== "All Promotions") {
-      switch (filters.promotionType) {
-        case "New This Week":
-          if (!promo.isNew) return false;
-          break;
-        case "Limited Time":
-          if (!promo.isLimitedTime) return false;
-          break;
-        case "Exclusive":
-          if (!promo.isExclusive) return false;
-          break;
-      }
-    }
-    
-    if (filters.cardType === "Credit Cards" && promo.cardType !== "credit") {
+    if (filters.cardType === "Credit Cards" && promo.cardtype !== "credit") {
       return false;
-    } else if (filters.cardType === "Debit Cards" && promo.cardType !== "debit") {
+    } else if (filters.cardType === "Debit Cards" && promo.cardtype !== "debit") {
       return false;
     }
     
@@ -358,8 +345,7 @@ const Dashboard = () => {
               activeFilter={activeFilter}
               showOnlyCompatible={showOnlyCompatible}
               categories={categories}
-              banks={banks}
-              promotionTypes={promotionTypes}
+              banks={allBanks}
               cardTypes={cardTypes}
               setActiveFilter={setActiveFilter}
               handleFilterChange={handleFilterChange}

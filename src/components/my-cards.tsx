@@ -614,11 +614,10 @@ export const MyCards = ({ onCardsChange }: MyCardsProps) => {
                     <SelectValue placeholder="Select bank" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="Nacion">Nacion</SelectItem>
-                    <SelectItem value="Ciudad">Ciudad</SelectItem>
-                    <SelectItem value="Galicia">Galicia</SelectItem>
-                    <SelectItem value="Macro">Macro</SelectItem>
-                    <SelectItem value="BBVA">BBVA</SelectItem>
+                    <SelectItem value="Banco Nacion">Banco Nacion</SelectItem>
+                    <SelectItem value="Banco Ciudad">Banco Ciudad</SelectItem>
+                    <SelectItem value="Banco Galicia">Banco Galicia</SelectItem>
+                    <SelectItem value="Banco BBVA">Banco BBVA</SelectItem>
                   </SelectContent>
                 </Select>
                 {errors.bank && <p className="text-sm text-red-500 mt-1">{errors.bank}</p>}
@@ -731,11 +730,10 @@ export const MyCards = ({ onCardsChange }: MyCardsProps) => {
                       <SelectValue placeholder="Select bank" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="Nacion">Nacion</SelectItem>
-                      <SelectItem value="Ciudad">Ciudad</SelectItem>
-                      <SelectItem value="Galicia">Galicia</SelectItem>
-                      <SelectItem value="Macro">Macro</SelectItem>
-                      <SelectItem value="BBVA">BBVA</SelectItem>
+                      <SelectItem value="Banco Nacion">Banco Nacion</SelectItem>
+                      <SelectItem value="Banco Ciudad">Banco Ciudad</SelectItem>
+                      <SelectItem value="Banco Galicia">Banco Galicia</SelectItem>
+                      <SelectItem value="Banco BBVA">Banco BBVA</SelectItem>
                     </SelectContent>
                   </Select>
                   {errors.bank && <p className="text-sm text-red-500 mt-1">{errors.bank}</p>}

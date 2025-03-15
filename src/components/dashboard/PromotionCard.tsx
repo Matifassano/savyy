@@ -23,7 +23,6 @@ export const PromotionCard = ({ promotion }: PromotionCardProps) => {
               <CardTitle className="text-base sm:text-lg">{promotion.title}</CardTitle>
               <CardDescription className="text-xs sm:text-sm">
                 {promotion.bank} 
-                <span className="ml-2 inline-block px-1.5 py-0.5 bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300 text-[10px] rounded-full capitalize">{promotion.cardType}</span>
               </CardDescription>
             </div>
           </div>
@@ -36,10 +35,11 @@ export const PromotionCard = ({ promotion }: PromotionCardProps) => {
             <span className="text-xs text-muted-foreground">
               Valid: {promotion.valid_until}
             </span>
-            <Button size="sm" variant="outline" className="text-xs w-full sm:w-auto flex items-center gap-1.5">
-              <ExternalLink className="h-3 w-3" />
-              Link to Promotion
-            </Button>
+            <a href={promotion.link_promotion} target="_blank" rel="noopener noreferrer" className="text-xs w-full sm:w-auto flex items-center gap-1.5">
+              <Button size="sm" variant="outline" className="text-xs w-full sm:w-auto flex items-center gap-1.5">
+                Link to Promotion
+              </Button>
+            </a>
           </div>
         </CardContent>
       </Card>
