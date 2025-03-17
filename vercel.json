@@ -2,7 +2,7 @@
   "rewrites": [
     {
       "source": "/api/(.*)",
-      "destination": "https://tu-backend.up.railway.app/api/$1"
+      "destination": "https://savyy-production-afe9.up.railway.app"
     }
   ]
 }
