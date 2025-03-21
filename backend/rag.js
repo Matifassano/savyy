@@ -19,6 +19,8 @@ const llm = new ChatOpenAI({
     apiKey: process.env.OPENAI_API_KEY,
 });
 
+const collectionName = 'promotions';
+
 // Función para realizar búsqueda de similitud en Qdrant
 async function similaritySearch(query, limit = 5) {
     try {
@@ -27,10 +29,10 @@ async function similaritySearch(query, limit = 5) {
         const embeddings = await createEmbeddings([query]);
         
         // Buscar en la colección de Qdrant
-        const results = await qdrantClient.search({
-            collection_name: 'promotions',
+        const results = await qdrantClient.search( collectionName,{
             vector: embeddings[0],
             limit: limit,
+            with_payload: true
         });
         
         // Formatear los resultados para LangChain
