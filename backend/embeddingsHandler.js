@@ -3,8 +3,8 @@ const { createEmbeddings, verifyEmbeddingDimension } = require('./embeddingServi
 const supabase = require('./supabase');
 
 const client = new QdrantClient({
-    url: 'https://c98e2e29-2244-44d6-bca1-6d4c4c53b278.us-east4-0.gcp.cloud.qdrant.io:6333',
-    apiKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2Nlc3MiOiJtIn0.93A2rScIq4TlhCyECVzVsYWhHF3kohYP8DJpypA4ItM',
+    url: process.env.QDRANT_URL,
+    apiKey: process.env.QDRANT_API_KEY,
 });
 
 const collectionName = 'promotions';

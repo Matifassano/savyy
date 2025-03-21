@@ -1,13 +1,19 @@
 const express = require("express");
 const cors = require("cors");
 const { router, fetchAndCacheScraping } = require("./routes/scrapingRoutes");
+const ragRouter = require("./routes/ragRoutes");
 const { PORT, SCRAPING_INTERVAL_HOURS } = require("./config/settings");
 const { ensureCollectionExists, scrollPromotions } = require("./embeddingsHandler");
+const path = require("path");
 
 const app = express();
 app.use(cors());
 app.use(express.json());
 app.use("/api", router);
+app.use("/api/rag", ragRouter);
+
+// Servir archivos estáticos desde la carpeta public
+app.use(express.static(path.join(__dirname, 'public')));
 
 // Inicializar la colección de Qdrant
 async function initializeApp() {
@@ -33,6 +39,7 @@ async function initializeApp() {
     // Start the server
     app.listen(PORT, () => {
       console.log(`Servidor corriendo en http://localhost:${PORT}`);
+      console.log(`RAG API disponible en http://localhost:${PORT}/api/rag`);
     });
   } catch (error) {
     console.error("Error initializing app:", error);

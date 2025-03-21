@@ -1,4 +1,3 @@
-
 import { Bot, Info, MessageCircle, SendHorizontal } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -6,30 +5,48 @@ import { useToast } from "@/hooks/use-toast";
 import { ConnectedApp } from "@/types/dashboard";
 import { useState } from "react";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
+import axios from "axios";
 
 interface ZenyChatProps {
   connectedApps: ConnectedApp[];
 }
 
+interface Message {
+  sender: "user" | "bot";
+  content: string;
+  isLoading?: boolean;
+}
+
 export const ZenyChat = ({ connectedApps }: ZenyChatProps) => {
   const { toast } = useToast();
   const [message, setMessage] = useState("");
-  const [chatHistory, setChatHistory] = useState([
+  const [isLoading, setIsLoading] = useState(false);
+  const [chatHistory, setChatHistory] = useState<Message[]>([
     {
       sender: "bot",
-      content: "Hello! I'm Savy, your personal finance assistant. How can I help you today?"
+      content: "Hello! I'm Savy, your personal finance assistant. I can help with your finances and answer questions about bank promotions. Try asking me about credit card offers or discounts!"
     }
   ]);
 
   const handleLearnMore = () => {
     toast({
       title: "About Savy",
-      description: "Savy is an AI-powered finance assistant built directly into this app. Ask about your spending habits, budgeting tips, or how to optimize your finances.",
+      description: "Savy is an AI-powered finance assistant built directly into this app. Ask about your spending habits, budgeting tips, or how to optimize your finances. You can also ask about bank promotions!",
       duration: 6000,
     });
   };
 
-  const handleSendMessage = () => {
+  const queryRagApi = async (question: string): Promise<string> => {
+    try {
+      const response = await axios.post('/api/rag/query', { question });
+      return response.data.answer;
+    } catch (error) {
+      console.error('Error querying RAG API:', error);
+      return "Sorry, I couldn't process your request at the moment. Please try again later.";
+    }
+  };
+
+  const handleSendMessage = async () => {
     if (!message.trim()) return;
     
     // Add user message to chat
@@ -41,16 +58,51 @@ export const ZenyChat = ({ connectedApps }: ZenyChatProps) => {
     // Clear input
     setMessage("");
     
-    // Simulate bot response after a delay
-    setTimeout(() => {
-      setChatHistory(prev => [
-        ...prev,
-        { 
+    // Add loading message
+    setChatHistory(prev => [
+      ...prev,
+      { sender: "bot", content: "Thinking...", isLoading: true }
+    ]);
+    
+    setIsLoading(true);
+    
+    try {
+      // Query the RAG API
+      const answer = await queryRagApi(message);
+      
+      // Replace loading message with actual response
+      setChatHistory(prev => {
+        const newHistory = [...prev];
+        // Remove the last loading message
+        newHistory.pop();
+        // Add the actual response
+        newHistory.push({ sender: "bot", content: answer });
+        return newHistory;
+      });
+    } catch (error) {
+      console.error('Error handling message:', error);
+      
+      // Replace loading message with error
+      setChatHistory(prev => {
+        const newHistory = [...prev];
+        // Remove the last loading message
+        newHistory.pop();
+        // Add error message
+        newHistory.push({ 
           sender: "bot", 
-          content: "I'm here to help with your finances. You can ask me about your spending, savings, or financial advice."
-        }
-      ]);
-    }, 1000);
+          content: "Sorry, I encountered an error processing your request."
+        });
+        return newHistory;
+      });
+      
+      toast({
+        title: "Error",
+        description: "Failed to get a response. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
@@ -79,7 +131,7 @@ export const ZenyChat = ({ connectedApps }: ZenyChatProps) => {
                 <Bot className="h-16 w-16 text-blue-500" />
               </div>
               <h3 className="text-xl font-semibold mb-2">Savy</h3>
-              <p className="text-sm text-muted-foreground mb-4">Your AI finance assistant built into the app to help analyze your spending and provide personalized advice</p>
+              <p className="text-sm text-muted-foreground mb-4">Your AI finance assistant built into the app to help analyze your spending and provide personalized advice about promotions and financial products</p>
             </div>
             <div className="col-span-2 bg-white/80 dark:bg-slate-900/80 rounded-lg p-6">
               <h4 className="font-medium mb-4 flex items-center">
@@ -96,7 +148,17 @@ export const ZenyChat = ({ connectedApps }: ZenyChatProps) => {
                         : "bg-primary/10 rounded-lg rounded-tr-none ml-auto"
                     } p-3 max-w-[80%]`}
                   >
-                    <p className="text-sm">{msg.content}</p>
+                    <p className="text-sm">
+                      {msg.isLoading ? (
+                        <span className="flex items-center">
+                          <span className="animate-pulse">●</span>
+                          <span className="animate-pulse ml-1">●</span>
+                          <span className="animate-pulse ml-1">●</span>
+                        </span>
+                      ) : (
+                        msg.content
+                      )}
+                    </p>
                   </div>
                 ))}
               </div>
@@ -105,12 +167,14 @@ export const ZenyChat = ({ connectedApps }: ZenyChatProps) => {
                   value={message}
                   onChange={(e) => setMessage(e.target.value)}
                   onKeyDown={handleKeyPress}
-                  placeholder="Type your message..." 
+                  placeholder="Ask about promotions or financial advice..." 
                   className="rounded-r-none"
+                  disabled={isLoading}
                 />
                 <Button 
                   className="rounded-l-none" 
                   onClick={handleSendMessage}
+                  disabled={isLoading}
                 >
                   <SendHorizontal className="h-4 w-4" />
                 </Button>
@@ -145,7 +209,17 @@ export const ZenyChat = ({ connectedApps }: ZenyChatProps) => {
                       : "bg-primary/10 rounded-lg rounded-tr-none ml-auto"
                   } p-2 max-w-[85%]`}
                 >
-                  <p className="text-sm">{msg.content}</p>
+                  <p className="text-sm">
+                    {msg.isLoading ? (
+                      <span className="flex items-center">
+                        <span className="animate-pulse">●</span>
+                        <span className="animate-pulse ml-1">●</span>
+                        <span className="animate-pulse ml-1">●</span>
+                      </span>
+                    ) : (
+                      msg.content
+                    )}
+                  </p>
                 </div>
               ))}
             </div>
@@ -156,13 +230,15 @@ export const ZenyChat = ({ connectedApps }: ZenyChatProps) => {
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
                 onKeyDown={handleKeyPress}
-                placeholder="Message Savy..." 
+                placeholder="Ask about promotions or financial advice..." 
                 className="rounded-r-none text-sm"
+                disabled={isLoading}
               />
               <Button 
                 size="sm"
                 className="rounded-l-none" 
                 onClick={handleSendMessage}
+                disabled={isLoading}
               >
                 <SendHorizontal className="h-4 w-4" />
               </Button>
