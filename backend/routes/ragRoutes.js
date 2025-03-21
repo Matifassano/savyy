@@ -1,121 +1,98 @@
+/**
+ * Rutas para el servicio RAG
+ */
+
 const express = require('express');
 const router = express.Router();
+const ragService = require('../services/ragService');
+const logger = require('../config/logger');
 
-// Intenta importar la función queryPromotions, pero proporciona una alternativa en caso de error
-let queryPromotions;
-try {
-    const rag = require('../rag');
-    queryPromotions = rag.queryPromotions;
-} catch (error) {
-    console.warn('Advertencia: No se pudo cargar el módulo RAG:', error.message);
-    // Función simulada para permitir que el servidor siga funcionando
-    queryPromotions = async (question) => {
-        return `Lo siento, el sistema RAG no está disponible en este momento. Por favor, inténtalo más tarde. (Error: ${error.message})`;
-    };
-}
-
-// Ruta para realizar consultas RAG
+/**
+ * @route POST /api/rag/query
+ * @desc Consultar promociones usando RAG
+ * @access Public
+ */
 router.post('/query', async (req, res) => {
     try {
         const { question } = req.body;
         
-        // Validar que se ha proporcionado una pregunta
         if (!question || typeof question !== 'string' || question.trim() === '') {
+            return res.status(400).json({ 
+                success: false, 
+                error: 'Se requiere una pregunta válida'
+            });
+        }
+        
+        logger.info(`Recibida consulta RAG: "${question}"`);
+        const response = await ragService.queryPromotions(question);
+        
+        return res.status(200).json({
+            success: true,
+            response,
+            requestQuestion: question
+        });
+    } catch (error) {
+        logger.error(`Error en endpoint RAG query: ${error.message}`);
+        return res.status(500).json({
+            success: false,
+            error: 'Error al procesar la consulta',
+            message: error.message
+        });
+    }
+});
+
+/**
+ * @route POST /api/rag/search
+ * @desc Realizar búsqueda semántica sin generación
+ * @access Public
+ */
+router.post('/search', async (req, res) => {
+    try {
+        const { query, limit = 5 } = req.body;
+        
+        if (!query || typeof query !== 'string' || query.trim() === '') {
+            return res.status(400).json({ 
+                success: false, 
+                error: 'Se requiere una consulta válida'
+            });
+        }
+        
+        if (limit > 20) {
             return res.status(400).json({
                 success: false,
-                message: 'Se requiere una pregunta válida'
+                error: 'El límite máximo es 20'
             });
         }
         
-        // Procesar la consulta
-        console.log(`RAG Consulta: "${question}"`);
-        const startTime = Date.now();
+        logger.info(`Recibida búsqueda semántica: "${query}" (limit: ${limit})`);
+        const results = await ragService.similaritySearch(query, limit);
         
-        try {
-            const answer = await queryPromotions(question);
-            
-            const elapsedTime = Date.now() - startTime;
-            console.log(`RAG Respuesta generada en ${elapsedTime}ms`);
-            
-            // Devolver la respuesta
-            res.json({
-                success: true,
-                question,
-                answer,
-                processingTime: elapsedTime
-            });
-        } catch (error) {
-            console.error('Error en el procesamiento RAG:', error);
-            
-            // Si hay un error específico relacionado con la API de OpenAI
-            if (error.message && error.message.includes('OpenAI')) {
-                return res.status(503).json({
-                    success: false,
-                    message: 'Servicio de OpenAI temporalmente no disponible',
-                    error: error.message
-                });
-            }
-            
-            // Error general
-            res.status(500).json({
-                success: false,
-                message: 'Error al procesar la consulta',
-                error: error.message
-            });
-        }
-    } catch (error) {
-        console.error('Error inesperado en la ruta RAG:', error);
-        res.status(500).json({
-            success: false,
-            message: 'Error interno del servidor',
-            error: error.message
-        });
-    }
-});
-
-// Ruta para obtener información sobre el modelo y las capacidades RAG
-router.get('/info', (req, res) => {
-    res.json({
-        success: true,
-        info: {
-            model: 'gpt-4o-mini',
-            capabilities: [
-                'Consultas sobre promociones bancarias',
-                'Información sobre beneficios de tarjetas',
-                'Filtrado por bancos y tipos de tarjetas',
-                'Detalles sobre fechas de validez de promociones'
-            ],
-            examples: [
-                '¿Qué promociones hay disponibles para tarjetas Visa?',
-                '¿Cuáles son los mejores descuentos de BBVA?',
-                '¿Hay promociones de cashback en Banco Galicia?',
-                '¿Qué beneficios ofrece Banco Ciudad este mes?'
-            ]
-        }
-    });
-});
-
-// Ruta para verificar el estado del servicio RAG
-router.get('/health', async (req, res) => {
-    try {
-        // Consulta simple para verificar si el sistema RAG está funcionando
-        const startTime = Date.now();
-        await queryPromotions('test');
-        const responseTime = Date.now() - startTime;
-        
-        res.json({
+        return res.status(200).json({
             success: true,
-            status: 'ok',
-            responseTime: `${responseTime}ms`
+            results,
+            count: results.length,
+            query
         });
     } catch (error) {
-        res.status(503).json({
+        logger.error(`Error en endpoint RAG search: ${error.message}`);
+        return res.status(500).json({
             success: false,
-            status: 'error',
-            message: 'El servicio RAG no está funcionando correctamente',
-            error: error.message
+            error: 'Error al realizar la búsqueda',
+            message: error.message
         });
     }
+});
+
+/**
+ * @route GET /api/rag/health
+ * @desc Verificar salud del servicio RAG
+ * @access Public
+ */
+router.get('/health', (_req, res) => {
+    res.status(200).json({
+        status: 'ok',
+        message: 'Servicio RAG funcionando correctamente'
+    });
 });
 
 module.exports = router; 
