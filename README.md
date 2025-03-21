@@ -29,13 +29,11 @@ This project is built with .
 
 ## To Do MVP:
 
-- Start with the scraping 
-- Check Banco Ciudad Benefits scraper
+- Add more promotions with the scraping 
 - Check .env keys in promotions file
 
-- Show the promotions
-- Delete promotions example
-- Create the RAG Chatbot "Savy"
+- Fix backend connection
+- Try rag
 
 ## After MVP:
 - Add other banks promotions
