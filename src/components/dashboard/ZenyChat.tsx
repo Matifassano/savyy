@@ -36,13 +36,27 @@ export const ZenyChat = ({ connectedApps }: ZenyChatProps) => {
     });
   };
 
+  const getApiBaseUrl = () => {
+    // Determinar si estamos en desarrollo o producción
+    const isProduction = window.location.hostname !== 'localhost';
+    
+    if (isProduction) {
+      // En Vercel o producción, usamos una API externa
+      return 'https://savyy-production-afe9.up.railway.app/';
+    }
+    
+    // En desarrollo local
+    return '/api';
+  };
+
   const queryRagApi = async (question: string): Promise<string> => {
     try {
-      const response = await axios.post('/api/rag/query', { question });
+      const baseUrl = getApiBaseUrl();
+      const response = await axios.post(`${baseUrl}/rag/query`, { question });
       return response.data.answer;
     } catch (error) {
       console.error('Error querying RAG API:', error);
-      return "Sorry, I couldn't process your request at the moment. Please try again later.";
+      return "Sorry, I couldn't process your request at the moment. Please try again later or check if the backend server is running.";
     }
   };
 
@@ -90,14 +104,14 @@ export const ZenyChat = ({ connectedApps }: ZenyChatProps) => {
         // Add error message
         newHistory.push({ 
           sender: "bot", 
-          content: "Sorry, I encountered an error processing your request."
+          content: "Sorry, I encountered an error processing your request. Please check if the backend server is running."
         });
         return newHistory;
       });
       
       toast({
         title: "Error",
-        description: "Failed to get a response. Please try again.",
+        description: "Failed to get a response. Please check if the backend server is running.",
         variant: "destructive",
       });
     } finally {
