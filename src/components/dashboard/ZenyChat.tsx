@@ -42,7 +42,7 @@ export const ZenyChat = ({ connectedApps }: ZenyChatProps) => {
     
     if (isProduction) {
       // En producción, usamos la API de Railway
-      return 'https://savyy-backend-production.up.railway.app/api';
+      return 'https://savyy-production-afe9.up.railway.app/api';
     }
     
     // En desarrollo local
