@@ -18,7 +18,6 @@ npm run dev
 ```
 
 ## What technologies are used for this project?
-
 This project is built with .
 
 - Vite
@@ -28,12 +27,10 @@ This project is built with .
 - Tailwind CSS
 
 ## To Do MVP:
-
 - Add more promotions with the scraping 
 - Check .env keys in promotions file
-
-- Fix backend connection
-- Try rag
+- Configurar de manera correcta las respuestas de Savyy
+-  
 
 ## After MVP:
 - Add other banks promotions
