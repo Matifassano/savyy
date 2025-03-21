@@ -41,8 +41,8 @@ export const ZenyChat = ({ connectedApps }: ZenyChatProps) => {
     const isProduction = window.location.hostname !== 'localhost';
     
     if (isProduction) {
-      // En Vercel o producción, usamos una API externa
-      return 'https://savyy-production-afe9.up.railway.app/';
+      // En producción, usamos la API de Railway
+      return 'https://savyy-backend-production.up.railway.app/api';
     }
     
     // En desarrollo local
