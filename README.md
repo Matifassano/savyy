@@ -26,13 +26,9 @@ This project is built with .
 - shadcn-ui
 - Tailwind CSS
 
-## To Do MVP:
-- Add more promotions with the scraping 
+## To Do for MVP:
+- Add more promotions with the scraping
 - Check .env keys in promotions file
-- Configurar de manera correcta las respuestas de Savyy
--  
-
-## After MVP:
-- Add other banks promotions
-- Add other banks cards
-- Add the Zeny UI
+- Check savyy answers
+- Check security
+- Review plans and pnl
