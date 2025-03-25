@@ -106,37 +106,35 @@ async function scrapeAllBanks() {
 
   // Save results to Supabase
   if (results.length > 0) {
-    // Save to Supabase
-    for (const item of results) {
-      // Remove the manually generated ID
-      delete item.id;
-      
-      // Check if promotion already exists
-      const { data: existingPromo, error: queryError } = await supabase
+    try {
+      // First, delete all existing promotions
+      const { error: deleteError } = await supabase
         .from('promotions')
-        .select('*')
-        .eq('bank', item.bank)
-        .eq('title', item.title);
+        .delete()
+        .neq('id', 0); // This will delete all rows
       
-      if (queryError) {
-        console.error("Error checking for existing promotion:", queryError);
-        continue;
-      }
-      
-      // Only insert if promotion doesn't exist
-      if (!existingPromo || existingPromo.length === 0) {
-        const { error } = await supabase
-          .from('promotions')
-          .insert([item]);
-
-        if (error) {
-          console.error("Error saving to Supabase:", error);
-        } else {
-          console.log("New promotion saved to Supabase correctly");
-        }
+      if (deleteError) {
+        console.error("Error deleting existing promotions:", deleteError);
       } else {
-        console.log("Promotion already exists, skipping:", item.title);
+        console.log("All existing promotions deleted successfully");
+        
+        // Then insert all new promotions
+        const { error: insertError } = await supabase
+          .from('promotions')
+          .insert(results.map(item => {
+            // Remove any manually generated ID
+            const { error, url, ...promotionData } = item;
+            return promotionData;
+          }));
+        
+        if (insertError) {
+          console.error("Error saving new promotions to Supabase:", insertError);
+        } else {
+          console.log(`${results.length} new promotions saved to Supabase correctly`);
+        }
       }
+    } catch (error) {
+      console.error("Error in save operation:", error);
     }
   }
   return results;

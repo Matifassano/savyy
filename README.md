@@ -28,7 +28,8 @@ This project is built with .
 
 ## To Do for MVP:
 - Add more promotions with the scraping
+- Review savyy answers
+- Edit HTML content
 - Check .env keys in promotions file
-- Check savyy answers
 - Check security
 - Review plans and pnl
