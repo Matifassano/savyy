@@ -27,9 +27,9 @@ This project is built with .
 - Tailwind CSS
 
 ## To Do for MVP:
-- Add more promotions with the scraping
 - Review savyy answers
 - Edit HTML content
+- Check "sin beneficios" in Banco Ciudad benefits
 - Check .env keys in promotions file
 - Check security
 - Review plans and pnl

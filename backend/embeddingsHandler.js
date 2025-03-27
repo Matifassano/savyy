@@ -111,6 +111,7 @@ async function generateAndStoreEmbeddings() {
                     title: promo.title,
                     link_promotion: promo.link_promotion,
                     cardtype: promo.cardtype,
+                    category: promo.category,
                     payment_network: promo.payment_network,
                     benefits: promo.benefits,
                     valid_until: promo.valid_until,
@@ -125,12 +126,25 @@ async function generateAndStoreEmbeddings() {
 
     if (points.length > 0) {
         try {
-            // 🔁 Insertar todos los embeddings en una sola llamada
-            await client.upsert('promotions', { points });
+            // 🗑️ Primero borrar todos los embeddings existentes
+            await client.delete(collectionName, {
+                filter: {
+                    must: [
+                        {
+                            has_id: points.map(point => point.id)
+                        }
+                    ]
+                }
+            });
+            
+            console.log(`🧹 Deleted existing embeddings for ${points.length} promotions.`);
+            
+            // 🔁 Insertar todos los embeddings nuevos en una sola llamada
+            await client.upsert(collectionName, { points });
 
             console.log(`✅ ${points.length} embeddings stored successfully in Qdrant.`);
         } catch (error) {
-            console.error("Error storing embeddings in Qdrant:", error);
+            console.error("Error managing embeddings in Qdrant:", error);
         }
     }
 }

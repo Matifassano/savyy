@@ -1,0 +1,2 @@
+ALTER TABLE public.promotions
+ADD COLUMN IF NOT EXISTS category TEXT DEFAULT NULL;
