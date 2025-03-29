@@ -110,8 +110,6 @@ async function generateAndStoreEmbeddings() {
                     bank: promo.bank,
                     title: promo.title,
                     link_promotion: promo.link_promotion,
-                    cardtype: promo.cardtype,
-                    category: promo.category,
                     payment_network: promo.payment_network,
                     benefits: promo.benefits,
                     valid_until: promo.valid_until,
@@ -195,4 +193,3 @@ module.exports = {
     scrollPromotions,
     client
 };
-

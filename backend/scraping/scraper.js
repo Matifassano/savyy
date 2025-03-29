@@ -46,7 +46,6 @@ async function scrapeAllBanks() {
               bank: bankName,
               title: benefit.title || 'Sin título',
               link_promotion: url,
-              cardtype: benefit.cardtype || null,
               payment_network: benefit.payment_network || null,
               benefits: benefit.benefits || null,
               valid_until: benefit.valid_until || null
@@ -59,7 +58,6 @@ async function scrapeAllBanks() {
               bank: bankName,
               title: promo.titulo || 'Sin título',
               link_promotion: url,
-              cardtype: null,
               payment_network: null,
               benefits: promo.descripcion || null,
               valid_until: promo.validez || null
@@ -71,7 +69,6 @@ async function scrapeAllBanks() {
             bank: bankName,
             title: scrapedData.title || 'Sin título',
             link_promotion: url,
-            cardtype: null,
             payment_network: null,
             benefits: null,
             valid_until: null
@@ -84,7 +81,6 @@ async function scrapeAllBanks() {
           bank: bankName,
           title: title || 'Sin título',
           link_promotion: url,
-          cardtype: null,
           payment_network: null,
           benefits: null,
           valid_until: null
@@ -146,9 +142,6 @@ setInterval(scrapeAllBanks, 345600000);
 // Helper function to extract bank name from URL
 function getBankNameFromUrl(url) {
   if (url.includes("bancociudad")) return "Banco Ciudad";
-  if (url.includes("bbva")) return "BBVA";
-  if (url.includes("galicia")) return "Banco Galicia";
-  if (url.includes("semananacion")) return "Banco Nación";
   return "Unknown Bank";
 }
 

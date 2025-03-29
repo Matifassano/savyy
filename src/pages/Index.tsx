@@ -17,7 +17,7 @@ const Index = () => {
     {
       icon: <CreditCard className="h-6 w-6" />,
       title: "Card Management",
-      description: "Add and manage your bank cards securely",
+      description: "Add and manage your bank cards with total peace of mind",
     },
     {
       icon: <Bell className="h-6 w-6" />,
@@ -63,7 +63,7 @@ const Index = () => {
       name: "Ultimate",
       price: "$7.99",
       period: "per month",
-      description: "Ultimate experience for power users",
+      description: "Ultimate experience for full time users",
       features: [
         "Unlimited cards",
         "Unlimited chat messages",
@@ -113,7 +113,7 @@ const Index = () => {
             className="text-center max-w-3xl mx-auto space-y-4 sm:space-y-6"
           >
             <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight">
-              Never Miss a Bank Promotion Again
+              Never Miss a Promotion Again
             </h1>
             <p className="text-base sm:text-lg md:text-xl text-muted-foreground">
               Get instant notifications about bank promotions when shopping online.

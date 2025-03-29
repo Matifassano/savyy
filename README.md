@@ -27,9 +27,6 @@ This project is built with .
 - Tailwind CSS
 
 ## To Do for MVP:
-- Review savyy answers
-- Edit HTML content
+- Review links answers by Savyy
 - Check "sin beneficios" in Banco Ciudad benefits
 - Check .env keys in promotions file
-- Check security
-- Review plans and pnl

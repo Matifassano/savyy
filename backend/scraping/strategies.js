@@ -72,7 +72,6 @@ async function scrapeBancoCiudad(page) {
             }
           }
 
-
           const diasContainer = card.querySelector('.d-flex.flex-row.align-items-center.mt-1.mt-md-3');
           let dias_validos = 'Sin fecha de validez';
           if (diasContainer) {

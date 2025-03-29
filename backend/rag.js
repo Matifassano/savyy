@@ -15,7 +15,7 @@ const qdrantClient = new QdrantClient({
 // Crear un modelo de chat con OpenAI usando gpt-4o-mini
 const llm = new ChatOpenAI({
     modelName: 'gpt-4o-mini',
-    temperature: 0.2, // Menor temperatura para respuestas más deterministas
+    temperature: 0.8, // Menor temperatura para respuestas más deterministas
     apiKey: process.env.OPENAI_API_KEY,
 });
 
@@ -55,22 +55,27 @@ async function similaritySearch(query, limit = 5) {
 
 // Crear una plantilla de prompt con contexto
 const promptTemplate = PromptTemplate.fromTemplate(`
-    Sos Savy, un asistente que ayuda a los usuarios a encontrar promociones bancarias según las tarjetas que usan y lo que necesitan.
+    Sos Savy, un asistente que ayuda a los usuarios a encontrar promociones bancarias según sus tarjetas y necesidades.
     
-    Mostrá solo las promociones del contexto que se ajusten a la consulta del usuario. Respondé de forma clara, breve y amigable.
+    📌 **Instrucciones:**  
+    - Respondé de forma clara y amigable, como si estuvieras charlando con alguien.  
+    - Si hay una promoción, explicala de forma natural, sin sonar demasiado rígido.  
+    - Si hay un link, mencionarlo directamente sin parentesis ni corchetes, de forma natural.  
+    - Si no hay información en el contexto, decílo directamente sin inventar nada.  
     
-    Si no hay información relacionada en el contexto, no inventes. Decile que no encontrás promociones y que puede revisar la web oficial de su banco para más detalles.
+    ---
     
-    CONTEXTO:
+    🔎 **CONTEXTO**:
     {context}
     
-    PREGUNTA:
+    🙋‍♂️ **PREGUNTA**:
     {question}
     
-    RESPUESTA:
+    ---
+    
+    💬 **RESPUESTA**:
     `);
     
-
 // Crear la cadena de procesamiento RAG
 const createRagChain = () => {
     const ragChain = RunnableSequence.from([
