@@ -3,6 +3,10 @@
 ## Introduction
 Savyy is an intelligent platform that helps users discover and manage bank promotions effortlessly. The app notifies users about relevant bank offers based on their cards, saving them money when shopping online and ensuring they never miss a valuable promotion.
 
+
+## 👀 Preview
+![Demo de la aplicación](public\savyy-preview.gif)
+
 ## Features
 
 ### 🔍 Smart Promotion Discovery
