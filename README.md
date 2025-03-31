@@ -3,9 +3,8 @@
 ## Introduction
 Savyy is an intelligent platform that helps users discover and manage bank promotions effortlessly. The app notifies users about relevant bank offers based on their cards, saving them money when shopping online and ensuring they never miss a valuable promotion.
 
-
 ## 👀 Preview
-![Preview](https://github.com/user-attachments/assets/f8351a31-af25-428f-a236-58a870d43dd6)
+<video src="https://github.com/user-attachments/assets/d12024b8-d2e2-4b69-8384-752b4c035bdd" autoplay loop muted controls width="800"></video>
 
 ## Features
 
