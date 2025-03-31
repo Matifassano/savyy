@@ -5,7 +5,7 @@ Savyy is an intelligent platform that helps users discover and manage bank promo
 
 
 ## 👀 Preview
-![Demo de la aplicación](public\savyy-preview.gif)
+![Preview](https://github.com/user-attachments/assets/f8351a31-af25-428f-a236-58a870d43dd6)
 
 ## Features
 
